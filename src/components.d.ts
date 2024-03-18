@@ -20,6 +20,8 @@ export namespace Components {
          */
         "middle": string;
     }
+    interface PharmacyPrescriptionList {
+    }
 }
 declare global {
     interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
@@ -28,8 +30,15 @@ declare global {
         prototype: HTMLMyComponentElement;
         new (): HTMLMyComponentElement;
     };
+    interface HTMLPharmacyPrescriptionListElement extends Components.PharmacyPrescriptionList, HTMLStencilElement {
+    }
+    var HTMLPharmacyPrescriptionListElement: {
+        prototype: HTMLPharmacyPrescriptionListElement;
+        new (): HTMLPharmacyPrescriptionListElement;
+    };
     interface HTMLElementTagNameMap {
         "my-component": HTMLMyComponentElement;
+        "pharmacy-prescription-list": HTMLPharmacyPrescriptionListElement;
     }
 }
 declare namespace LocalJSX {
@@ -47,8 +56,11 @@ declare namespace LocalJSX {
          */
         "middle"?: string;
     }
+    interface PharmacyPrescriptionList {
+    }
     interface IntrinsicElements {
         "my-component": MyComponent;
+        "pharmacy-prescription-list": PharmacyPrescriptionList;
     }
 }
 export { LocalJSX as JSX };
@@ -56,6 +68,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "pharmacy-prescription-list": LocalJSX.PharmacyPrescriptionList & JSXBase.HTMLAttributes<HTMLPharmacyPrescriptionListElement>;
         }
     }
 }
