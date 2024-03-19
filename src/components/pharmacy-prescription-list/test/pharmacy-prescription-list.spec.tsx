@@ -7,12 +7,11 @@ describe('pharmacy-prescription-list', () => {
       components: [PharmacyPrescriptionList],
       html: `<pharmacy-prescription-list></pharmacy-prescription-list>`,
     });
-    expect(page.root).toEqualHtml(`
-      <pharmacy-prescription-list>
-        <mock:shadow-root>
-          <slot></slot>
-        </mock:shadow-root>
-      </pharmacy-prescription-list>
-    `);
+
+    const wlList = page.rootInstance as PharmacyPrescriptionList;
+   const expectedPatients = wlList?.drugPrescriptions?.length
+
+    const items = page.root.shadowRoot.querySelectorAll("md-list-item");
+    expect(items.length).toEqual(expectedPatients);
   });
 });
