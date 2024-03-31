@@ -44,13 +44,13 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
+
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
       with:
         images: |
-          <your-dockerhub-account>/ambulance-ufe
+          kabadrian/pharmacy-ufe
         tags: |
           type=schedule
           type=ref,event=branch
@@ -60,3 +60,12 @@ jobs:
           type=semver,pattern={{major}}.{{minor}} # napr `1.0`
           type=semver,pattern={{major}}
           type=raw,value=latest,enable={{is_default_branch}} # `latest` pre každý komit do main vetvy
+
+    - uses: docker/build-push-action@v2
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64/v8
+        file: ./build/docker/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
