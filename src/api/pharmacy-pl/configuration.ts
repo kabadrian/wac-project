@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pharmacy Prescription List Api
- * Ambulance Waiting List management for Web-In-Cloud system
+ * Pharmacy Prescription API
+ * Pharmacy Prescription management system
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: xkabac@stuba.sk

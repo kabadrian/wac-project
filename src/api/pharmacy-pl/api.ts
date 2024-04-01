@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * Pharmacy Prescription List Api
- * Ambulance Waiting List management for Web-In-Cloud system
+ * Pharmacy Prescription API
+ * Pharmacy Prescription management system
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: xkabac@stuba.sk
@@ -24,103 +24,133 @@ import type { RequestArgs } from './base';
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
 
 /**
- * Describes disease, symptoms, or other reasons of patient   visit
+ * 
  * @export
- * @interface Condition
+ * @interface Medicine
  */
-export interface Condition {
+export interface Medicine {
     /**
      * 
      * @type {string}
-     * @memberof Condition
+     * @memberof Medicine
      */
-    'value': string;
+    'medicineId': string;
     /**
      * 
      * @type {string}
-     * @memberof Condition
+     * @memberof Medicine
      */
-    'code'?: string;
+    'name': string;
     /**
-     * Link to encyclopedical explanation of the patient\'s condition
+     * 
      * @type {string}
-     * @memberof Condition
+     * @memberof Medicine
      */
-    'reference'?: string;
+    'dosage': string;
     /**
      * 
      * @type {number}
-     * @memberof Condition
+     * @memberof Medicine
      */
-    'typicalDurationMinutes'?: number;
+    'quantityPrescribed': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof Medicine
+     */
+    'quantityDispensed': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Medicine
+     */
+    'dispenseDate': string;
 }
 /**
  * 
  * @export
- * @interface PrescriptionListEntry
+ * @interface Prescription
  */
-export interface PrescriptionListEntry {
-    /**
-     * Unique id of the entry in this waiting list
-     * @type {string}
-     * @memberof PrescriptionListEntry
-     */
-    'id': string;
-    /**
-     * Name of patient in waiting list
-     * @type {string}
-     * @memberof PrescriptionListEntry
-     */
-    'name'?: string;
-    /**
-     * Unique identifier of the patient known to Web-In-Cloud system
-     * @type {string}
-     * @memberof PrescriptionListEntry
-     */
-    'patientId': string;
-    /**
-     * Timestamp since when the patient entered the waiting list
-     * @type {string}
-     * @memberof PrescriptionListEntry
-     */
-    'waitingSince': string;
-    /**
-     * Estimated time of entering ambulance. Ignored on post.
-     * @type {string}
-     * @memberof PrescriptionListEntry
-     */
-    'estimatedStart'?: string;
-    /**
-     * Estimated duration of ambulance visit. If not provided then it will be computed based on condition and ambulance settings
-     * @type {number}
-     * @memberof PrescriptionListEntry
-     */
-    'estimatedDurationMinutes': number;
+export interface Prescription {
     /**
      * 
-     * @type {Condition}
-     * @memberof PrescriptionListEntry
+     * @type {string}
+     * @memberof Prescription
      */
-    'condition'?: Condition;
+    'prescriptionId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'patientName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'doctorName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'issuedDate': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'validUntil': string;
+    /**
+     * 
+     * @type {Array<Medicine>}
+     * @memberof Prescription
+     */
+    'medicines': Array<Medicine>;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'status': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'instructions'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'ambulanceId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'notes'?: string;
 }
 
 /**
- * PharmacyPrescriptionListApi - axios parameter creator
+ * PrescriptionsApi - axios parameter creator
  * @export
  */
-export const PharmacyPrescriptionListApiAxiosParamCreator = function (configuration?: Configuration) {
+export const PrescriptionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * By using ambulanceId you get list of entries in pharmacy prescription list
-         * @summary Provides the pharmacy prescription list
-         * @param {string} ambulanceId pass the id of the particular ambulance
+         * By using ambulanceId, you get the list of prescriptions issued by the ambulance
+         * @summary Provides the list of prescriptions for an ambulance
+         * @param {string} ambulanceId Pass the ID of the particular ambulance
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPrescriptionListEntries: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getAmbulancePrescriptions: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'ambulanceId' is not null or undefined
-            assertParamExists('getPrescriptionListEntries', 'ambulanceId', ambulanceId)
-            const localVarPath = `/prescription-list/{ambulanceId}/entries`
+            assertParamExists('getAmbulancePrescriptions', 'ambulanceId', ambulanceId)
+            const localVarPath = `/prescriptions/{ambulanceId}`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -148,81 +178,81 @@ export const PharmacyPrescriptionListApiAxiosParamCreator = function (configurat
 };
 
 /**
- * PharmacyPrescriptionListApi - functional programming interface
+ * PrescriptionsApi - functional programming interface
  * @export
  */
-export const PharmacyPrescriptionListApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = PharmacyPrescriptionListApiAxiosParamCreator(configuration)
+export const PrescriptionsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = PrescriptionsApiAxiosParamCreator(configuration)
     return {
         /**
-         * By using ambulanceId you get list of entries in pharmacy prescription list
-         * @summary Provides the pharmacy prescription list
-         * @param {string} ambulanceId pass the id of the particular ambulance
+         * By using ambulanceId, you get the list of prescriptions issued by the ambulance
+         * @summary Provides the list of prescriptions for an ambulance
+         * @param {string} ambulanceId Pass the ID of the particular ambulance
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPrescriptionListEntries(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PrescriptionListEntry>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPrescriptionListEntries(ambulanceId, options);
+        async getAmbulancePrescriptions(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Prescription>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAmbulancePrescriptions(ambulanceId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
 };
 
 /**
- * PharmacyPrescriptionListApi - factory interface
+ * PrescriptionsApi - factory interface
  * @export
  */
-export const PharmacyPrescriptionListApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = PharmacyPrescriptionListApiFp(configuration)
+export const PrescriptionsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = PrescriptionsApiFp(configuration)
     return {
         /**
-         * By using ambulanceId you get list of entries in pharmacy prescription list
-         * @summary Provides the pharmacy prescription list
-         * @param {string} ambulanceId pass the id of the particular ambulance
+         * By using ambulanceId, you get the list of prescriptions issued by the ambulance
+         * @summary Provides the list of prescriptions for an ambulance
+         * @param {string} ambulanceId Pass the ID of the particular ambulance
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPrescriptionListEntries(ambulanceId: string, options?: any): AxiosPromise<Array<PrescriptionListEntry>> {
-            return localVarFp.getPrescriptionListEntries(ambulanceId, options).then((request) => request(axios, basePath));
+        getAmbulancePrescriptions(ambulanceId: string, options?: any): AxiosPromise<Array<Prescription>> {
+            return localVarFp.getAmbulancePrescriptions(ambulanceId, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * PharmacyPrescriptionListApi - interface
+ * PrescriptionsApi - interface
  * @export
- * @interface PharmacyPrescriptionListApi
+ * @interface PrescriptionsApi
  */
-export interface PharmacyPrescriptionListApiInterface {
+export interface PrescriptionsApiInterface {
     /**
-     * By using ambulanceId you get list of entries in pharmacy prescription list
-     * @summary Provides the pharmacy prescription list
-     * @param {string} ambulanceId pass the id of the particular ambulance
+     * By using ambulanceId, you get the list of prescriptions issued by the ambulance
+     * @summary Provides the list of prescriptions for an ambulance
+     * @param {string} ambulanceId Pass the ID of the particular ambulance
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof PharmacyPrescriptionListApiInterface
+     * @memberof PrescriptionsApiInterface
      */
-    getPrescriptionListEntries(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<PrescriptionListEntry>>;
+    getAmbulancePrescriptions(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<Prescription>>;
 
 }
 
 /**
- * PharmacyPrescriptionListApi - object-oriented interface
+ * PrescriptionsApi - object-oriented interface
  * @export
- * @class PharmacyPrescriptionListApi
+ * @class PrescriptionsApi
  * @extends {BaseAPI}
  */
-export class PharmacyPrescriptionListApi extends BaseAPI implements PharmacyPrescriptionListApiInterface {
+export class PrescriptionsApi extends BaseAPI implements PrescriptionsApiInterface {
     /**
-     * By using ambulanceId you get list of entries in pharmacy prescription list
-     * @summary Provides the pharmacy prescription list
-     * @param {string} ambulanceId pass the id of the particular ambulance
+     * By using ambulanceId, you get the list of prescriptions issued by the ambulance
+     * @summary Provides the list of prescriptions for an ambulance
+     * @param {string} ambulanceId Pass the ID of the particular ambulance
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof PharmacyPrescriptionListApi
+     * @memberof PrescriptionsApi
      */
-    public getPrescriptionListEntries(ambulanceId: string, options?: AxiosRequestConfig) {
-        return PharmacyPrescriptionListApiFp(this.configuration).getPrescriptionListEntries(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    public getAmbulancePrescriptions(ambulanceId: string, options?: AxiosRequestConfig) {
+        return PrescriptionsApiFp(this.configuration).getAmbulancePrescriptions(ambulanceId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

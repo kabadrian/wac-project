@@ -3,155 +3,225 @@ servers:
   - description: Cluster Endpoint
     url: /api
 info:
-  description: Ambulance Waiting List management for Web-In-Cloud system
+  description: Pharmacy Prescription management system
   version: "1.0.0"
-  title: Pharmacy Prescription List Api
+  title: Pharmacy Prescription API
   contact:
     email: xkabac@stuba.sk
   license:
     name: CC BY 4.0
     url: "https://creativecommons.org/licenses/by/4.0/"
 tags:
- - name: pharmacyPresctiptionList
-   description: Pharmacy Prescription List API
+ - name: prescriptions
+   description: Pharmacy Prescription API
 paths:
- "/prescription-list/{ambulanceId}/entries":
-   get:
-     tags:
-       - pharmacyPrescriptionList
-     summary: Provides the pharmacy prescription list
-     operationId: getPrescriptionListEntries
-     description: By using ambulanceId you get list of entries in pharmacy prescription list
-     parameters:
-       - in: path
-         name: ambulanceId
-         description: pass the id of the particular ambulance
-         required: true
-         schema:
-           type: string
-     responses:
-       "200":
-         description: value of the prescription list entries
-         content:
-           application/json:
-             schema:
-               type: array
-               items:
-                 $ref: "#/components/schemas/PrescriptionListEntry"
-             examples:
-               response:
-                 $ref: "#/components/examples/PrescriptionListEntriesExample"
-       "404":
-         description: Ambulance with such ID does not exist
+  "/prescriptions/{ambulanceId}":
+    get:
+      tags:
+        - prescriptions
+      summary: Provides the list of prescriptions for an ambulance
+      operationId: getAmbulancePrescriptions
+      description: By using ambulanceId, you get the list of prescriptions issued by the ambulance
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: Pass the ID of the particular ambulance
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of prescriptions for the ambulance
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Prescription"
+        "404":
+          description: Ambulance with such ID does not exist
+    post:
+      tags:
+        - prescriptions
+      summary: Creates a new prescription
+      operationId: createPrescription
+      description: Use this endpoint to create a new prescription associated with an ambulance.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: The ID of the ambulance where the prescription was issued.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Prescription"
+        description: The prescription to create.
+        required: true
+      responses:
+        "201":
+          description: Prescription created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prescription"
+        "400":
+          description: Invalid input provided.
+        "404":
+          description: Ambulance with the provided ID does not exist.
+
+  "/prescriptions/{ambulanceId}/{prescriptionId}":
+    get:
+      tags:
+        - prescriptions
+      summary: Retrieves a specific prescription by ID
+      operationId: getPrescriptionById
+      description: Use this endpoint to retrieve details of a specific prescription by its ID and ambulanceId.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: The ID of the ambulance associated with the prescription.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: prescriptionId
+          description: The ID of the prescription to retrieve.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Prescription retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Prescription"
+        "404":
+          description: Prescription or ambulance with the provided ID does not exist.
+
+    put:
+      tags:
+        - prescriptions
+      summary: Updates a specific prescription
+      operationId: updatePrescription
+      description: Use this endpoint to update details of a specific prescription.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: The ID of the ambulance associated with the prescription.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: prescriptionId
+          description: The ID of the prescription to update.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Prescription"
+        description: The updated prescription details.
+        required: true
+      responses:
+        "200":
+          description: Prescription updated successfully.
+        "400":
+          description: Invalid input provided.
+        "404":
+          description: Prescription or ambulance with the provided ID does not exist.
+
+    delete:
+      tags:
+        - prescriptions
+      summary: Deletes a specific prescription
+      operationId: deletePrescription
+      description: Use this endpoint to delete a specific prescription by its ID.
+      parameters:
+        - in: path
+          name: ambulanceId
+          description: The ID of the ambulance associated with the prescription to delete.
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: prescriptionId
+          description: The ID of the prescription to delete.
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Prescription deleted successfully.
+        "404":
+          description: Prescription or ambulance with the provided ID does not exist.
+
 
 components:
   schemas:
-    PrescriptionListEntry:
+    Prescription:
       type: object
-      required: [id, patientId, waitingSince, estimatedDurationMinutes]
+      required: [prescriptionId, patientName, doctorName, issuedDate, validUntil, medicines, status, ambulanceId]
       properties:
-        id:
+        prescriptionId:
           type: string
-          example: x321ab3
-          description: Unique id of the entry in this waiting list
+          example: RX123456789
+        patientName:
+          type: string
+          example: John Smith
+        doctorName:
+          type: string
+          example: Dr. Dutoschwarz
+        issuedDate:
+          type: string
+          format: date
+          example: "2024-04-01"
+        validUntil:
+          type: string
+          format: date
+          example: "2024-06-01"
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medicine'
+        status:
+          type: string
+          example: partially dispensed
+        instructions:
+          type: string
+          example: Take one tablet three times a day after meals.
+        ambulanceId:
+          type: string
+          example: "AMB123456789"
+        notes:
+          type: string
+          example: Patient allergic to penicillin. Adjusted medication accordingly.
+
+    Medicine:
+      type: object
+      required: [medicineId, name, dosage, quantityPrescribed, quantityDispensed, dispenseDate]
+      properties:
+        medicineId:
+          type: string
+          example: MED3001
         name:
           type: string
-          example: Jožko Púčik
-          description: Name of patient in waiting list
-        patientId:
+          example: Amoxicillin
+        dosage:
           type: string
-          example: 460527-jozef-pucik
-          description: Unique identifier of the patient known to Web-In-Cloud system
-        waitingSince:
-          type: string
-          format: date-time
-          example: "2038-12-24T10:05:00Z"
-          description: Timestamp since when the patient entered the waiting list
-        estimatedStart:
-          type: string
-          format: date-time
-          example: "2038-12-24T10:35:00Z"
-          description: Estimated time of entering ambulance. Ignored on post.
-        estimatedDurationMinutes:
+          example: 500mg
+        quantityPrescribed:
           type: integer
-          format: int32
-          example: 15
-          description: >-
-            Estimated duration of ambulance visit. If not provided then it will
-            be computed based on condition and ambulance settings
-        condition:
-          $ref: "#/components/schemas/Condition"
-      example:
-        $ref: "#/components/examples/PrescriptionListEntryExample"
-    Condition:
-      description: "Describes disease, symptoms, or other reasons of patient   visit"
-      required:
-        - value
-      properties:
-        value:
-          type: string
-          example: Teploty
-        code:
-          type: string
-          example: subfebrilia
-        reference:
-          type: string
-          format: url
-          example: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-          description: Link to encyclopedical explanation of the patient's condition
-        typicalDurationMinutes:
+          example: 30
+        quantityDispensed:
           type: integer
-          format: int32
-          example: 20
-      example:
-        $ref: "#/components/examples/ConditionExample"
-  examples:
-    PrescriptionListEntryExample:
-      summary: Ľudomír Zlostný waiting
-      description: |
-        Entry represents a patient waiting in the ambulance prep room with
-        defined symptoms
-      value:
-        id: x321ab3
-        name: Ľudomír Zlostný
-        patientId: 74895-ludomir-zlostny
-        waitingSince: "2038-12-24T10:05:00.000Z"
-        estimatedStart: "2038-12-24T10:35:00.000Z"
-        estimatedDurationMinutes: 15
-        condition:
-          value: Nevoľnosť
-          code: nausea
-          reference: "https://zdravoteka.sk/priznaky/nevolnost/"
-    ConditionExample:
-      summary: Conditions and symptoms
-      description: list of few symptoms that can be chosen by patients
-      value:
-        valuee: Teploty
-        code: subfebrilia
-        reference: >-
-          https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/
-    PrescriptionListEntriesExample:
-      summary: List of waiting patients
-      description: |
-        Example waiting list containing 2 patients
-      value:
-      - id: x321ab3
-        name: Jožko Púčik
-        patientId: 460527-jozef-pucik
-        waitingSince: "2038-12-24T10:05:00.000Z"
-        estimatedStart: "2038-12-24T10:35:00.000Z"
-        estimatedDurationMinutes: 15
-        condition:
-          value: Teploty
-          code: subfebrilia
-          reference: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-      - id: x321ab4
-        name: Ferdinand Trety
-        patientId: 780907-ferdinand-tre
-        waitingSince: "2038-12-24T10:25:00.000Z"
-        estimatedStart: "2038-12-24T10:50:00.000Z"
-        estimatedDurationMinutes: 25
-        condition:
-          value: Nevoľnosť
-          code: nausea
-          reference: "https://zdravoteka.sk/priznaky/nevolnost/"
+          example: 30
+        dispenseDate:
+          type: string
+          format: date
+          example: "2024-04-02"
