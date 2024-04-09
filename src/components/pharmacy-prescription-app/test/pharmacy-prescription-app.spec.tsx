@@ -10,7 +10,7 @@ describe('pharmacy-prescription-app', () => {
     expect(page.root).toEqualHtml(`
       <pharmacy-prescription-app>
         <mock:shadow-root>
-          <slot></slot>
+          <pharmacy-prescription-list></pharmacy-prescription-list>
         </mock:shadow-root>
       </pharmacy-prescription-app>
     `);
