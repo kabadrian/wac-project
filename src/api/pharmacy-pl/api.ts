@@ -65,6 +65,18 @@ export interface Medicine {
      * @memberof Medicine
      */
     'dispenseDate': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Medicine
+     */
+    'notes'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Medicine
+     */
+    'unit'?: string;
 }
 /**
  * 
@@ -77,7 +89,7 @@ export interface Prescription {
      * @type {string}
      * @memberof Prescription
      */
-    'prescriptionId': string;
+    'id': string;
     /**
      * 
      * @type {string}
@@ -141,6 +153,84 @@ export interface Prescription {
 export const PrescriptionsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Use this endpoint to create a new prescription associated with an ambulance.
+         * @summary Creates a new prescription
+         * @param {string} ambulanceId The ID of the ambulance where the prescription was issued.
+         * @param {Prescription} prescription The prescription to create.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPrescription: async (ambulanceId: string, prescription: Prescription, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('createPrescription', 'ambulanceId', ambulanceId)
+            // verify required parameter 'prescription' is not null or undefined
+            assertParamExists('createPrescription', 'prescription', prescription)
+            const localVarPath = `/prescriptions/{ambulanceId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(prescription, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to delete a specific prescription by its ID.
+         * @summary Deletes a specific prescription
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription to delete.
+         * @param {string} prescriptionId The ID of the prescription to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePrescription: async (ambulanceId: string, prescriptionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('deletePrescription', 'ambulanceId', ambulanceId)
+            // verify required parameter 'prescriptionId' is not null or undefined
+            assertParamExists('deletePrescription', 'prescriptionId', prescriptionId)
+            const localVarPath = `/prescriptions/{ambulanceId}/{prescriptionId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"prescriptionId"}}`, encodeURIComponent(String(prescriptionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * By using ambulanceId, you get the list of prescriptions issued by the ambulance
          * @summary Provides the list of prescriptions for an ambulance
          * @param {string} ambulanceId Pass the ID of the particular ambulance
@@ -174,6 +264,88 @@ export const PrescriptionsApiAxiosParamCreator = function (configuration?: Confi
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * Use this endpoint to retrieve details of a specific prescription by its ID and ambulanceId.
+         * @summary Retrieves a specific prescription by ID
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+         * @param {string} prescriptionId The ID of the prescription to retrieve.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPrescriptionById: async (ambulanceId: string, prescriptionId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('getPrescriptionById', 'ambulanceId', ambulanceId)
+            // verify required parameter 'prescriptionId' is not null or undefined
+            assertParamExists('getPrescriptionById', 'prescriptionId', prescriptionId)
+            const localVarPath = `/prescriptions/{ambulanceId}/{prescriptionId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"prescriptionId"}}`, encodeURIComponent(String(prescriptionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to update details of a specific prescription.
+         * @summary Updates a specific prescription
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+         * @param {string} prescriptionId The ID of the prescription to update.
+         * @param {Prescription} prescription The updated prescription details.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePrescription: async (ambulanceId: string, prescriptionId: string, prescription: Prescription, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('updatePrescription', 'ambulanceId', ambulanceId)
+            // verify required parameter 'prescriptionId' is not null or undefined
+            assertParamExists('updatePrescription', 'prescriptionId', prescriptionId)
+            // verify required parameter 'prescription' is not null or undefined
+            assertParamExists('updatePrescription', 'prescription', prescription)
+            const localVarPath = `/prescriptions/{ambulanceId}/{prescriptionId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"prescriptionId"}}`, encodeURIComponent(String(prescriptionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(prescription, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -185,6 +357,30 @@ export const PrescriptionsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = PrescriptionsApiAxiosParamCreator(configuration)
     return {
         /**
+         * Use this endpoint to create a new prescription associated with an ambulance.
+         * @summary Creates a new prescription
+         * @param {string} ambulanceId The ID of the ambulance where the prescription was issued.
+         * @param {Prescription} prescription The prescription to create.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPrescription(ambulanceId: string, prescription: Prescription, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Prescription>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPrescription(ambulanceId, prescription, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to delete a specific prescription by its ID.
+         * @summary Deletes a specific prescription
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription to delete.
+         * @param {string} prescriptionId The ID of the prescription to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePrescription(ambulanceId: string, prescriptionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePrescription(ambulanceId, prescriptionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * By using ambulanceId, you get the list of prescriptions issued by the ambulance
          * @summary Provides the list of prescriptions for an ambulance
          * @param {string} ambulanceId Pass the ID of the particular ambulance
@@ -193,6 +389,31 @@ export const PrescriptionsApiFp = function(configuration?: Configuration) {
          */
         async getAmbulancePrescriptions(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Prescription>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAmbulancePrescriptions(ambulanceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to retrieve details of a specific prescription by its ID and ambulanceId.
+         * @summary Retrieves a specific prescription by ID
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+         * @param {string} prescriptionId The ID of the prescription to retrieve.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPrescriptionById(ambulanceId: string, prescriptionId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Prescription>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPrescriptionById(ambulanceId, prescriptionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to update details of a specific prescription.
+         * @summary Updates a specific prescription
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+         * @param {string} prescriptionId The ID of the prescription to update.
+         * @param {Prescription} prescription The updated prescription details.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updatePrescription(ambulanceId: string, prescriptionId: string, prescription: Prescription, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePrescription(ambulanceId, prescriptionId, prescription, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -206,6 +427,28 @@ export const PrescriptionsApiFactory = function (configuration?: Configuration, 
     const localVarFp = PrescriptionsApiFp(configuration)
     return {
         /**
+         * Use this endpoint to create a new prescription associated with an ambulance.
+         * @summary Creates a new prescription
+         * @param {string} ambulanceId The ID of the ambulance where the prescription was issued.
+         * @param {Prescription} prescription The prescription to create.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPrescription(ambulanceId: string, prescription: Prescription, options?: any): AxiosPromise<Prescription> {
+            return localVarFp.createPrescription(ambulanceId, prescription, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to delete a specific prescription by its ID.
+         * @summary Deletes a specific prescription
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription to delete.
+         * @param {string} prescriptionId The ID of the prescription to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePrescription(ambulanceId: string, prescriptionId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePrescription(ambulanceId, prescriptionId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * By using ambulanceId, you get the list of prescriptions issued by the ambulance
          * @summary Provides the list of prescriptions for an ambulance
          * @param {string} ambulanceId Pass the ID of the particular ambulance
@@ -214,6 +457,29 @@ export const PrescriptionsApiFactory = function (configuration?: Configuration, 
          */
         getAmbulancePrescriptions(ambulanceId: string, options?: any): AxiosPromise<Array<Prescription>> {
             return localVarFp.getAmbulancePrescriptions(ambulanceId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to retrieve details of a specific prescription by its ID and ambulanceId.
+         * @summary Retrieves a specific prescription by ID
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+         * @param {string} prescriptionId The ID of the prescription to retrieve.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPrescriptionById(ambulanceId: string, prescriptionId: string, options?: any): AxiosPromise<Prescription> {
+            return localVarFp.getPrescriptionById(ambulanceId, prescriptionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to update details of a specific prescription.
+         * @summary Updates a specific prescription
+         * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+         * @param {string} prescriptionId The ID of the prescription to update.
+         * @param {Prescription} prescription The updated prescription details.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updatePrescription(ambulanceId: string, prescriptionId: string, prescription: Prescription, options?: any): AxiosPromise<void> {
+            return localVarFp.updatePrescription(ambulanceId, prescriptionId, prescription, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -225,6 +491,28 @@ export const PrescriptionsApiFactory = function (configuration?: Configuration, 
  */
 export interface PrescriptionsApiInterface {
     /**
+     * Use this endpoint to create a new prescription associated with an ambulance.
+     * @summary Creates a new prescription
+     * @param {string} ambulanceId The ID of the ambulance where the prescription was issued.
+     * @param {Prescription} prescription The prescription to create.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApiInterface
+     */
+    createPrescription(ambulanceId: string, prescription: Prescription, options?: AxiosRequestConfig): AxiosPromise<Prescription>;
+
+    /**
+     * Use this endpoint to delete a specific prescription by its ID.
+     * @summary Deletes a specific prescription
+     * @param {string} ambulanceId The ID of the ambulance associated with the prescription to delete.
+     * @param {string} prescriptionId The ID of the prescription to delete.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApiInterface
+     */
+    deletePrescription(ambulanceId: string, prescriptionId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
      * By using ambulanceId, you get the list of prescriptions issued by the ambulance
      * @summary Provides the list of prescriptions for an ambulance
      * @param {string} ambulanceId Pass the ID of the particular ambulance
@@ -233,6 +521,29 @@ export interface PrescriptionsApiInterface {
      * @memberof PrescriptionsApiInterface
      */
     getAmbulancePrescriptions(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<Prescription>>;
+
+    /**
+     * Use this endpoint to retrieve details of a specific prescription by its ID and ambulanceId.
+     * @summary Retrieves a specific prescription by ID
+     * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+     * @param {string} prescriptionId The ID of the prescription to retrieve.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApiInterface
+     */
+    getPrescriptionById(ambulanceId: string, prescriptionId: string, options?: AxiosRequestConfig): AxiosPromise<Prescription>;
+
+    /**
+     * Use this endpoint to update details of a specific prescription.
+     * @summary Updates a specific prescription
+     * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+     * @param {string} prescriptionId The ID of the prescription to update.
+     * @param {Prescription} prescription The updated prescription details.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApiInterface
+     */
+    updatePrescription(ambulanceId: string, prescriptionId: string, prescription: Prescription, options?: AxiosRequestConfig): AxiosPromise<void>;
 
 }
 
@@ -244,6 +555,32 @@ export interface PrescriptionsApiInterface {
  */
 export class PrescriptionsApi extends BaseAPI implements PrescriptionsApiInterface {
     /**
+     * Use this endpoint to create a new prescription associated with an ambulance.
+     * @summary Creates a new prescription
+     * @param {string} ambulanceId The ID of the ambulance where the prescription was issued.
+     * @param {Prescription} prescription The prescription to create.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApi
+     */
+    public createPrescription(ambulanceId: string, prescription: Prescription, options?: AxiosRequestConfig) {
+        return PrescriptionsApiFp(this.configuration).createPrescription(ambulanceId, prescription, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to delete a specific prescription by its ID.
+     * @summary Deletes a specific prescription
+     * @param {string} ambulanceId The ID of the ambulance associated with the prescription to delete.
+     * @param {string} prescriptionId The ID of the prescription to delete.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApi
+     */
+    public deletePrescription(ambulanceId: string, prescriptionId: string, options?: AxiosRequestConfig) {
+        return PrescriptionsApiFp(this.configuration).deletePrescription(ambulanceId, prescriptionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * By using ambulanceId, you get the list of prescriptions issued by the ambulance
      * @summary Provides the list of prescriptions for an ambulance
      * @param {string} ambulanceId Pass the ID of the particular ambulance
@@ -253,6 +590,33 @@ export class PrescriptionsApi extends BaseAPI implements PrescriptionsApiInterfa
      */
     public getAmbulancePrescriptions(ambulanceId: string, options?: AxiosRequestConfig) {
         return PrescriptionsApiFp(this.configuration).getAmbulancePrescriptions(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to retrieve details of a specific prescription by its ID and ambulanceId.
+     * @summary Retrieves a specific prescription by ID
+     * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+     * @param {string} prescriptionId The ID of the prescription to retrieve.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApi
+     */
+    public getPrescriptionById(ambulanceId: string, prescriptionId: string, options?: AxiosRequestConfig) {
+        return PrescriptionsApiFp(this.configuration).getPrescriptionById(ambulanceId, prescriptionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to update details of a specific prescription.
+     * @summary Updates a specific prescription
+     * @param {string} ambulanceId The ID of the ambulance associated with the prescription.
+     * @param {string} prescriptionId The ID of the prescription to update.
+     * @param {Prescription} prescription The updated prescription details.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PrescriptionsApi
+     */
+    public updatePrescription(ambulanceId: string, prescriptionId: string, prescription: Prescription, options?: AxiosRequestConfig) {
+        return PrescriptionsApiFp(this.configuration).updatePrescription(ambulanceId, prescriptionId, prescription, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

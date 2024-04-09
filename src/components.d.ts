@@ -20,8 +20,28 @@ export namespace Components {
          */
         "middle": string;
     }
-    interface PharmacyPrescriptionList {
+    interface PharmacyPrescriptionApp {
+        "ambulanceId": string;
+        "apiBase": string;
+        "basePath": string;
     }
+    interface PharmacyPrescriptionEditor {
+        "ambulanceId": string;
+        "apiBase": string;
+        "entryId": string;
+    }
+    interface PharmacyPrescriptionList {
+        "ambulanceId": string;
+        "apiBase": string;
+    }
+}
+export interface PharmacyPrescriptionEditorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLPharmacyPrescriptionEditorElement;
+}
+export interface PharmacyPrescriptionListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLPharmacyPrescriptionListElement;
 }
 declare global {
     interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
@@ -30,7 +50,41 @@ declare global {
         prototype: HTMLMyComponentElement;
         new (): HTMLMyComponentElement;
     };
+    interface HTMLPharmacyPrescriptionAppElement extends Components.PharmacyPrescriptionApp, HTMLStencilElement {
+    }
+    var HTMLPharmacyPrescriptionAppElement: {
+        prototype: HTMLPharmacyPrescriptionAppElement;
+        new (): HTMLPharmacyPrescriptionAppElement;
+    };
+    interface HTMLPharmacyPrescriptionEditorElementEventMap {
+        "editor-closed": string;
+    }
+    interface HTMLPharmacyPrescriptionEditorElement extends Components.PharmacyPrescriptionEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLPharmacyPrescriptionEditorElementEventMap>(type: K, listener: (this: HTMLPharmacyPrescriptionEditorElement, ev: PharmacyPrescriptionEditorCustomEvent<HTMLPharmacyPrescriptionEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLPharmacyPrescriptionEditorElementEventMap>(type: K, listener: (this: HTMLPharmacyPrescriptionEditorElement, ev: PharmacyPrescriptionEditorCustomEvent<HTMLPharmacyPrescriptionEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLPharmacyPrescriptionEditorElement: {
+        prototype: HTMLPharmacyPrescriptionEditorElement;
+        new (): HTMLPharmacyPrescriptionEditorElement;
+    };
+    interface HTMLPharmacyPrescriptionListElementEventMap {
+        "entry-clicked": string;
+    }
     interface HTMLPharmacyPrescriptionListElement extends Components.PharmacyPrescriptionList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLPharmacyPrescriptionListElementEventMap>(type: K, listener: (this: HTMLPharmacyPrescriptionListElement, ev: PharmacyPrescriptionListCustomEvent<HTMLPharmacyPrescriptionListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLPharmacyPrescriptionListElementEventMap>(type: K, listener: (this: HTMLPharmacyPrescriptionListElement, ev: PharmacyPrescriptionListCustomEvent<HTMLPharmacyPrescriptionListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLPharmacyPrescriptionListElement: {
         prototype: HTMLPharmacyPrescriptionListElement;
@@ -38,6 +92,8 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "my-component": HTMLMyComponentElement;
+        "pharmacy-prescription-app": HTMLPharmacyPrescriptionAppElement;
+        "pharmacy-prescription-editor": HTMLPharmacyPrescriptionEditorElement;
         "pharmacy-prescription-list": HTMLPharmacyPrescriptionListElement;
     }
 }
@@ -56,10 +112,26 @@ declare namespace LocalJSX {
          */
         "middle"?: string;
     }
+    interface PharmacyPrescriptionApp {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "basePath"?: string;
+    }
+    interface PharmacyPrescriptionEditor {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onEditor-closed"?: (event: PharmacyPrescriptionEditorCustomEvent<string>) => void;
+    }
     interface PharmacyPrescriptionList {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "onEntry-clicked"?: (event: PharmacyPrescriptionListCustomEvent<string>) => void;
     }
     interface IntrinsicElements {
         "my-component": MyComponent;
+        "pharmacy-prescription-app": PharmacyPrescriptionApp;
+        "pharmacy-prescription-editor": PharmacyPrescriptionEditor;
         "pharmacy-prescription-list": PharmacyPrescriptionList;
     }
 }
@@ -68,6 +140,8 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "pharmacy-prescription-app": LocalJSX.PharmacyPrescriptionApp & JSXBase.HTMLAttributes<HTMLPharmacyPrescriptionAppElement>;
+            "pharmacy-prescription-editor": LocalJSX.PharmacyPrescriptionEditor & JSXBase.HTMLAttributes<HTMLPharmacyPrescriptionEditorElement>;
             "pharmacy-prescription-list": LocalJSX.PharmacyPrescriptionList & JSXBase.HTMLAttributes<HTMLPharmacyPrescriptionListElement>;
         }
     }

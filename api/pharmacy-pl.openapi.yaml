@@ -166,9 +166,9 @@ components:
   schemas:
     Prescription:
       type: object
-      required: [prescriptionId, patientName, doctorName, issuedDate, validUntil, medicines, status, ambulanceId]
+      required: [id, patientName, doctorName, issuedDate, validUntil, medicines, status, ambulanceId]
       properties:
-        prescriptionId:
+        id:
           type: string
           example: RX123456789
         patientName:
@@ -225,3 +225,9 @@ components:
           type: string
           format: date
           example: "2024-04-02"
+        notes:
+          type: string
+          example: Take 2 times a day with food to avoid stomach upset.
+        unit:
+          type: string
+          example: tablets

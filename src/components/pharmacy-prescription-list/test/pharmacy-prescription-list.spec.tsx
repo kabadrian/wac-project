@@ -9,9 +9,9 @@ describe('pharmacy-prescription-list', () => {
     });
 
     const wlList = page.rootInstance as PharmacyPrescriptionList;
-   const expectedPatients = wlList?.drugPrescriptions?.length
+   const prescriptedMedicine = wlList?.medicinePrescriptions?.length
 
     const items = page.root.shadowRoot.querySelectorAll("md-list-item");
-    expect(items.length).toEqual(expectedPatients);
+    expect(items.length).toEqual(prescriptedMedicine);
   });
 });

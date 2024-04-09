@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <base href="/"/>
     <title>Stencil Component Starter</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
@@ -11,6 +12,17 @@
     <script nomodule src="/build/wac-kz-pharmacy.js"></script>
   </head>
   <body style="font-family: 'Roboto'; ">
-    <pharmacy-prescription-list></pharmacy-prescription-list>
+    <!-- <pharmacy-prescription-list
+      ambulance-id = "AMB123456789"
+      api-base="http://localhost:5000/api" base-path="/pharmacy-pl/"
+      >
+    </pharmacy-prescription-list>
+    <pharmacy-prescription-editor>
+    </pharmacy-prescription-editor> -->
+
+    <pharmacy-prescription-app 
+      ambulance-id = "AMB123456789"
+      api-base="http://localhost:5000/api"
+      base-path="/pharmacy-pl/"></pharmacy-prescription-app>
   </body>
 </html>

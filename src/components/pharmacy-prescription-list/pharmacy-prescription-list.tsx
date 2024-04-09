@@ -1,4 +1,6 @@
-import { Component, Host, h } from '@stencil/core';
+import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import { PrescriptionsApiFactory, Prescription, Medicine } from '../../api/pharmacy-pl';
+
 @Component({
   tag: 'pharmacy-prescription-list',
   styleUrl: 'pharmacy-prescription-list.css',
@@ -6,73 +8,62 @@ import { Component, Host, h } from '@stencil/core';
 })
 export class PharmacyPrescriptionList {
 
-  drugPrescriptions: any[];
+  medicinePrescriptions: Prescription[] = [];
 
-  private async getDrugPrescriptionsAsync(){
-    return await Promise.resolve(
-      [{
-          patientName: 'Jožko Púčik',
-          patientId: '10001',
-          createdAt: (new Date(Date.now())).toISOString(),
-          validUntil: (new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).toISOString(),
-          prescriptedDrugs: [{
-              name: 'Paralen',
-              amount: 20,
-              unit: 'tbl',
-              dosage: '1x denne',
-              note: 'Po jedle',
-              pickedUpAt: new Date(Date.now()).toISOString(),
-          }, {
-              name: 'Ibalgin',
-              amount: 10,
-              unit: 'tbl',
-              dosage: '1x denne',
-              note: 'Po jedle',
-              pickedUpAt: null,
-          }]
-      }, {
-          patientName: 'Janko Hraško',
-          patientId: '10002',
-          createdAt: (new Date(Date.now())).toISOString(),
-          validUntil: (new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)).toISOString(),
-          prescriptedDrugs: [{
-              name: 'Paralen',
-              amount: 1,
-              unit: 'tbl',
-              dosage: '1x denne',
-              note: 'Po jedle',
-              pickedUpAt: new Date(Date.now()).toISOString(),
-            }, {
-              name: 'Ibalgin',
-              amount: 3,
-              unit: 'tbl',
-              dosage: '2x denne',
-              note: 'Po jedle',
-              pickedUpAt: null,
-            }]
-      }]
-    );
+  @Event({ eventName: "entry-clicked" }) entryClicked: EventEmitter<string>;
+  @Prop() apiBase: string;
+  @Prop() ambulanceId: string;
+  @State() errorMessage: string;
+
+  private async getMedicinePrescriptionsAsync(): Promise<Prescription[]> {
+    try {
+      const response = await
+      PrescriptionsApiFactory(undefined, this.apiBase).
+          getAmbulancePrescriptions(this.ambulanceId)
+      if (response.status < 299) {
+        return response.data;
+      } else {
+        this.errorMessage = `Cannot retrieve list of prescriptions from this ambulance: ${response.statusText}`
+      }
+    } catch (err: any) {
+      this.errorMessage = `Cannot retrieve list of prescriptions from this ambulance: ${err.message || "unknown"}`
+    }
+    return [];
   }
 
   render() {
     return (
       <Host>
-       <md-list>
-          {this.drugPrescriptions.map(prescription =>
-            <md-list-item class="prescription-item">
-              <div slot="headline">{prescription.patientName}</div>
-              <div slot="supporting-text">{"Čas predpísania receptu: " + this.isoDateToLocale(prescription.createdAt)}</div>
-              <div slot="supporting-text">{"Recept platný do: " + this.isoDateToLocale(prescription.validUntil)}</div>
-              <md-icon slot="start">receipt_long</md-icon>
-            </md-list-item>
-          )}
-        </md-list>
+        {this.errorMessage
+          ? <div class="error">{this.errorMessage}</div>
+          :
+          <md-list>
+            {this.medicinePrescriptions.map(prescription =>
+              <md-list-item class="prescription-item" onClick={ () => this.entryClicked.emit(prescription.id)}>
+                <div slot="headline">{prescription.patientName}</div>
+                <div slot="supporting-text">{"Čas predpísania receptu: " + this.isoDateToLocale(prescription.issuedDate)}</div>
+                <div slot="supporting-text">{"Recept platný do: " + this.isoDateToLocale(prescription.validUntil)}</div>
+                <div slot="supporting-text">
+                  <p>Predpísané lieky:</p>
+                  <ul>
+                    {prescription.medicines.map((medicine: Medicine) => (
+                      <li>
+                        <p>{medicine.name}: {medicine.quantityPrescribed} {medicine.unit}, {medicine.dosage}, Poznámka: {medicine.notes}, Vyzdvihnuté: {medicine.dispenseDate ? this.isoDateToLocale(medicine.dispenseDate) : 'Zatiaľ nevyzdvihnuté'}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <md-icon slot="start">receipt_long</md-icon>
+              </md-list-item>
+            )}
+          </md-list>
+        }
       </Host>
     );
   }
 
   async componentWillLoad() {
-    this.drugPrescriptions = await this.getDrugPrescriptionsAsync();
+    this.medicinePrescriptions = await this.getMedicinePrescriptionsAsync();
   }
 
   private isoDateToLocale(iso:string) {
