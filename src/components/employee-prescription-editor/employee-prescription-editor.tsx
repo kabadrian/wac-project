@@ -2,11 +2,11 @@ import { Component, Host, Prop, State, h, EventEmitter, Event } from '@stencil/c
 import { Prescription, PrescriptionsApiFactory } from '../../api/pharmacy-pl';
 
 @Component({
-  tag: 'pharmacy-prescription-editor',
-  styleUrl: 'pharmacy-prescription-editor.css',
+  tag: 'employee-prescription-editor',
+  styleUrl: 'employee-prescription-editor.css',
   shadow: true,
 })
-export class PharmacyPrescriptionEditor {
+export class EmployeePrescriptionEditor {
 
   @Prop() entryId: string;
   @Prop() ambulanceId: string;

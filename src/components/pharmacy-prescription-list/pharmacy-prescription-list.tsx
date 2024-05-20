@@ -37,6 +37,7 @@ export class PharmacyPrescriptionList {
         {this.errorMessage
           ? <div class="error">{this.errorMessage}</div>
           :
+          <div>
           <md-list>
             {this.medicinePrescriptions.map(prescription =>
               <md-list-item class="prescription-item" onClick={ () => this.entryClicked.emit(prescription.id)}>
@@ -57,6 +58,13 @@ export class PharmacyPrescriptionList {
               </md-list-item>
             )}
           </md-list>
+          <div class="left-button-container">
+            <md-filled-button onClick={ () => this.entryClicked.emit("@new")}>
+              Home
+            </md-filled-button>
+          </div>
+          </div>
+          
         }
       </Host>
     );

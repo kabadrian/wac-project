@@ -1,3 +1,9 @@
 :host {
   display: block;
 }
+
+.button-container {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}

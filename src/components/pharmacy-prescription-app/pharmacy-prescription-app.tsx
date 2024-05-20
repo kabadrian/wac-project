@@ -13,7 +13,7 @@ export class PharmacyPrescriptionApp {
 
   @State() private relativePath = "";
 
-  @Prop() basePath: string="";
+  @Prop() basePath: string = "";
   @Prop() apiBase: string;
   @Prop() ambulanceId: string;
 
@@ -21,7 +21,7 @@ export class PharmacyPrescriptionApp {
     const baseUri = new URL(this.basePath, document.baseURI || "/").pathname;
 
     const toRelative = (path: string) => {
-      if (path.startsWith( baseUri)) {
+      if (path.startsWith(baseUri)) {
         this.relativePath = path.slice(baseUri.length)
       } else {
         this.relativePath = ""
@@ -37,35 +37,60 @@ export class PharmacyPrescriptionApp {
     toRelative(location.pathname)
   }
 
-
   render() {
     let element = "list"
     let entryId = "@new"
-  
-    if ( this.relativePath.startsWith("entry/"))
-    {
+    if (this.relativePath.startsWith("entry/")) {
       element = "editor";
       entryId = this.relativePath.split("/")[1]
     }
-  
-    const navigate = (path:string) => {
+    if (this.relativePath.startsWith("employee")) {
+      element = "employee";
+    }
+    if (this.relativePath.startsWith("employee/")) {
+      element = "employeeEditor";
+      entryId = this.relativePath.split("/")[1]
+    }
+
+    const navigate = (path: string) => {
       const absolute = new URL(path, new URL(this.basePath, document.baseURI)).pathname;
       window.navigation.navigate(absolute)
     }
-  
+
     return (
       <Host>
-        { element === "editor"
-        ? <pharmacy-prescription-editor entry-id={entryId}
+        {element === "editor"
+          ? <pharmacy-prescription-editor entry-id={entryId}
             ambulance-id={this.ambulanceId} api-base={this.apiBase}
-            oneditor-closed={ () => navigate("./list")} >
+            oneditor-closed={() => navigate("./list")}>
           </pharmacy-prescription-editor>
-        : <pharmacy-prescription-list
-            ambulance-id={this.ambulanceId} 
+          : element === "employee"
+          ? <employee-prescription-list
+            ambulance-id={this.ambulanceId}
             api-base={this.apiBase}
-            onentry-clicked={ (ev: CustomEvent<string>)=> navigate("./entry/" + ev.detail) }>
+            onentry-clicked={(ev: CustomEvent<string>) => navigate("./employee/" + ev.detail)}
+            >
+          </employee-prescription-list>
+          : element === "employeeEditor"
+          ? <employee-prescription-editor entry-id={entryId}
+            ambulance-id={this.ambulanceId} api-base={this.apiBase}
+            oneditor-closed={() => navigate("./employee")}>
+          </employee-prescription-editor>
+          : <pharmacy-prescription-list
+            ambulance-id={this.ambulanceId}
+            api-base={this.apiBase}
+            onentry-clicked={(ev: CustomEvent<string>) => navigate("./entry/" + ev.detail)}>
           </pharmacy-prescription-list>
         }
+
+        <div class="button-container">
+          <md-filled-button onClick={() => navigate("./employee")}>
+            Go to Employee
+          </md-filled-button>
+          <md-filled-button onClick={() => navigate("./list")}>
+            Ambulance
+          </md-filled-button>
+        </div>
       </Host>
     );
   }

@@ -6,6 +6,15 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
+    interface EmployeePrescriptionEditor {
+        "ambulanceId": string;
+        "apiBase": string;
+        "entryId": string;
+    }
+    interface EmployeePrescriptionList {
+        "ambulanceId": string;
+        "apiBase": string;
+    }
     interface MyComponent {
         /**
           * The first name
@@ -35,6 +44,14 @@ export namespace Components {
         "apiBase": string;
     }
 }
+export interface EmployeePrescriptionEditorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLEmployeePrescriptionEditorElement;
+}
+export interface EmployeePrescriptionListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLEmployeePrescriptionListElement;
+}
 export interface PharmacyPrescriptionEditorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLPharmacyPrescriptionEditorElement;
@@ -44,6 +61,40 @@ export interface PharmacyPrescriptionListCustomEvent<T> extends CustomEvent<T> {
     target: HTMLPharmacyPrescriptionListElement;
 }
 declare global {
+    interface HTMLEmployeePrescriptionEditorElementEventMap {
+        "editor-closed": string;
+    }
+    interface HTMLEmployeePrescriptionEditorElement extends Components.EmployeePrescriptionEditor, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLEmployeePrescriptionEditorElementEventMap>(type: K, listener: (this: HTMLEmployeePrescriptionEditorElement, ev: EmployeePrescriptionEditorCustomEvent<HTMLEmployeePrescriptionEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLEmployeePrescriptionEditorElementEventMap>(type: K, listener: (this: HTMLEmployeePrescriptionEditorElement, ev: EmployeePrescriptionEditorCustomEvent<HTMLEmployeePrescriptionEditorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLEmployeePrescriptionEditorElement: {
+        prototype: HTMLEmployeePrescriptionEditorElement;
+        new (): HTMLEmployeePrescriptionEditorElement;
+    };
+    interface HTMLEmployeePrescriptionListElementEventMap {
+        "entry-clicked": string;
+    }
+    interface HTMLEmployeePrescriptionListElement extends Components.EmployeePrescriptionList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLEmployeePrescriptionListElementEventMap>(type: K, listener: (this: HTMLEmployeePrescriptionListElement, ev: EmployeePrescriptionListCustomEvent<HTMLEmployeePrescriptionListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLEmployeePrescriptionListElementEventMap>(type: K, listener: (this: HTMLEmployeePrescriptionListElement, ev: EmployeePrescriptionListCustomEvent<HTMLEmployeePrescriptionListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLEmployeePrescriptionListElement: {
+        prototype: HTMLEmployeePrescriptionListElement;
+        new (): HTMLEmployeePrescriptionListElement;
+    };
     interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
     }
     var HTMLMyComponentElement: {
@@ -91,6 +142,8 @@ declare global {
         new (): HTMLPharmacyPrescriptionListElement;
     };
     interface HTMLElementTagNameMap {
+        "employee-prescription-editor": HTMLEmployeePrescriptionEditorElement;
+        "employee-prescription-list": HTMLEmployeePrescriptionListElement;
         "my-component": HTMLMyComponentElement;
         "pharmacy-prescription-app": HTMLPharmacyPrescriptionAppElement;
         "pharmacy-prescription-editor": HTMLPharmacyPrescriptionEditorElement;
@@ -98,6 +151,17 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    interface EmployeePrescriptionEditor {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onEditor-closed"?: (event: EmployeePrescriptionEditorCustomEvent<string>) => void;
+    }
+    interface EmployeePrescriptionList {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "onEntry-clicked"?: (event: EmployeePrescriptionListCustomEvent<string>) => void;
+    }
     interface MyComponent {
         /**
           * The first name
@@ -129,6 +193,8 @@ declare namespace LocalJSX {
         "onEntry-clicked"?: (event: PharmacyPrescriptionListCustomEvent<string>) => void;
     }
     interface IntrinsicElements {
+        "employee-prescription-editor": EmployeePrescriptionEditor;
+        "employee-prescription-list": EmployeePrescriptionList;
         "my-component": MyComponent;
         "pharmacy-prescription-app": PharmacyPrescriptionApp;
         "pharmacy-prescription-editor": PharmacyPrescriptionEditor;
@@ -139,6 +205,8 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "employee-prescription-editor": LocalJSX.EmployeePrescriptionEditor & JSXBase.HTMLAttributes<HTMLEmployeePrescriptionEditorElement>;
+            "employee-prescription-list": LocalJSX.EmployeePrescriptionList & JSXBase.HTMLAttributes<HTMLEmployeePrescriptionListElement>;
             "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
             "pharmacy-prescription-app": LocalJSX.PharmacyPrescriptionApp & JSXBase.HTMLAttributes<HTMLPharmacyPrescriptionAppElement>;
             "pharmacy-prescription-editor": LocalJSX.PharmacyPrescriptionEditor & JSXBase.HTMLAttributes<HTMLPharmacyPrescriptionEditorElement>;
