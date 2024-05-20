@@ -20,6 +20,7 @@ export class PharmacyPrescriptionList {
       const response = await
       PrescriptionsApiFactory(undefined, this.apiBase).
           getAmbulancePrescriptions(this.ambulanceId)
+      console.log("response");
       if (response.status < 299) {
         return response.data;
       } else {
@@ -49,7 +50,7 @@ export class PharmacyPrescriptionList {
                   <ul>
                     {prescription.medicines.map((medicine: Medicine) => (
                       <li>
-                        <p>{medicine.name}: {medicine.quantityPrescribed} {medicine.unit}, {medicine.dosage}, Poznámka: {medicine.notes}, Vyzdvihnuté: {medicine.dispenseDate ? this.isoDateToLocale(medicine.dispenseDate) : 'Zatiaľ nevyzdvihnuté'}</p>
+                        <p>{medicine.name}</p>
                       </li>
                     ))}
                   </ul>

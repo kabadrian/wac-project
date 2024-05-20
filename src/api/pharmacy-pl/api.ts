@@ -26,6 +26,37 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
 /**
  * 
  * @export
+ * @interface Ambulance
+ */
+export interface Ambulance {
+    /**
+     * Unique identifier for the ambulance
+     * @type {string}
+     * @memberof Ambulance
+     */
+    'id': string;
+    /**
+     * Human readable display name of the ambulance
+     * @type {string}
+     * @memberof Ambulance
+     */
+    'name': string;
+    /**
+     * 
+     * @type {Array<Prescription>}
+     * @memberof Ambulance
+     */
+    'prescriptionList'?: Array<Prescription>;
+    /**
+     * 
+     * @type {Array<MedicineOrder>}
+     * @memberof Ambulance
+     */
+    'medicineOrderList'?: Array<MedicineOrder>;
+}
+/**
+ * 
+ * @export
  * @interface Medicine
  */
 export interface Medicine {
@@ -34,50 +65,60 @@ export interface Medicine {
      * @type {string}
      * @memberof Medicine
      */
-    'medicineId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Medicine
-     */
     'name': string;
+}
+/**
+ * 
+ * @export
+ * @interface MedicineOrder
+ */
+export interface MedicineOrder {
     /**
      * 
      * @type {string}
-     * @memberof Medicine
+     * @memberof MedicineOrder
      */
-    'dosage': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof Medicine
-     */
-    'quantityPrescribed': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof Medicine
-     */
-    'quantityDispensed': number;
+    'orderId': string;
     /**
      * 
      * @type {string}
-     * @memberof Medicine
+     * @memberof MedicineOrder
      */
-    'dispenseDate': string;
+    'orderDate': string;
     /**
      * 
      * @type {string}
-     * @memberof Medicine
+     * @memberof MedicineOrder
+     */
+    'orderedBy': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MedicineOrder
      */
     'notes'?: string;
     /**
      * 
      * @type {string}
-     * @memberof Medicine
+     * @memberof MedicineOrder
      */
-    'unit'?: string;
+    'state'?: MedicineOrderStateEnum;
+    /**
+     * 
+     * @type {Array<Medicine>}
+     * @memberof MedicineOrder
+     */
+    'medicines': Array<Medicine>;
 }
+
+export const MedicineOrderStateEnum = {
+    Pending: 'pending',
+    Shipped: 'shipped',
+    Delivered: 'delivered'
+} as const;
+
+export type MedicineOrderStateEnum = typeof MedicineOrderStateEnum[keyof typeof MedicineOrderStateEnum];
+
 /**
  * 
  * @export
@@ -96,6 +137,12 @@ export interface Prescription {
      * @memberof Prescription
      */
     'patientName': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Prescription
+     */
+    'patientId': string;
     /**
      * 
      * @type {string}
@@ -137,14 +184,754 @@ export interface Prescription {
      * @type {string}
      * @memberof Prescription
      */
-    'ambulanceId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Prescription
-     */
     'notes'?: string;
 }
+
+/**
+ * AmbulancesApi - axios parameter creator
+ * @export
+ */
+export const AmbulancesApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Use this endpoint to register a new ambulance in the system.
+         * @summary Creates a new ambulance
+         * @param {Ambulance} ambulance The ambulance data to register.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAmbulance: async (ambulance: Ambulance, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulance' is not null or undefined
+            assertParamExists('createAmbulance', 'ambulance', ambulance)
+            const localVarPath = `/ambulances`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(ambulance, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to delete a specific ambulance by its ID.
+         * @summary Deletes a specific ambulance
+         * @param {string} ambulanceId The ID of the ambulance to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAmbulance: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('deleteAmbulance', 'ambulanceId', ambulanceId)
+            const localVarPath = `/ambulances/{ambulanceId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to retrieve a list of all ambulances in the system.
+         * @summary Retrieves all ambulances
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllAmbulances: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/ambulances`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AmbulancesApi - functional programming interface
+ * @export
+ */
+export const AmbulancesApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AmbulancesApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Use this endpoint to register a new ambulance in the system.
+         * @summary Creates a new ambulance
+         * @param {Ambulance} ambulance The ambulance data to register.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createAmbulance(ambulance: Ambulance, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Ambulance>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createAmbulance(ambulance, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to delete a specific ambulance by its ID.
+         * @summary Deletes a specific ambulance
+         * @param {string} ambulanceId The ID of the ambulance to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteAmbulance(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteAmbulance(ambulanceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to retrieve a list of all ambulances in the system.
+         * @summary Retrieves all ambulances
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAllAmbulances(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Ambulance>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAllAmbulances(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * AmbulancesApi - factory interface
+ * @export
+ */
+export const AmbulancesApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AmbulancesApiFp(configuration)
+    return {
+        /**
+         * Use this endpoint to register a new ambulance in the system.
+         * @summary Creates a new ambulance
+         * @param {Ambulance} ambulance The ambulance data to register.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createAmbulance(ambulance: Ambulance, options?: any): AxiosPromise<Ambulance> {
+            return localVarFp.createAmbulance(ambulance, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to delete a specific ambulance by its ID.
+         * @summary Deletes a specific ambulance
+         * @param {string} ambulanceId The ID of the ambulance to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteAmbulance(ambulanceId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteAmbulance(ambulanceId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to retrieve a list of all ambulances in the system.
+         * @summary Retrieves all ambulances
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllAmbulances(options?: any): AxiosPromise<Array<Ambulance>> {
+            return localVarFp.getAllAmbulances(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AmbulancesApi - interface
+ * @export
+ * @interface AmbulancesApi
+ */
+export interface AmbulancesApiInterface {
+    /**
+     * Use this endpoint to register a new ambulance in the system.
+     * @summary Creates a new ambulance
+     * @param {Ambulance} ambulance The ambulance data to register.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulancesApiInterface
+     */
+    createAmbulance(ambulance: Ambulance, options?: AxiosRequestConfig): AxiosPromise<Ambulance>;
+
+    /**
+     * Use this endpoint to delete a specific ambulance by its ID.
+     * @summary Deletes a specific ambulance
+     * @param {string} ambulanceId The ID of the ambulance to delete.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulancesApiInterface
+     */
+    deleteAmbulance(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Use this endpoint to retrieve a list of all ambulances in the system.
+     * @summary Retrieves all ambulances
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulancesApiInterface
+     */
+    getAllAmbulances(options?: AxiosRequestConfig): AxiosPromise<Array<Ambulance>>;
+
+}
+
+/**
+ * AmbulancesApi - object-oriented interface
+ * @export
+ * @class AmbulancesApi
+ * @extends {BaseAPI}
+ */
+export class AmbulancesApi extends BaseAPI implements AmbulancesApiInterface {
+    /**
+     * Use this endpoint to register a new ambulance in the system.
+     * @summary Creates a new ambulance
+     * @param {Ambulance} ambulance The ambulance data to register.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulancesApi
+     */
+    public createAmbulance(ambulance: Ambulance, options?: AxiosRequestConfig) {
+        return AmbulancesApiFp(this.configuration).createAmbulance(ambulance, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to delete a specific ambulance by its ID.
+     * @summary Deletes a specific ambulance
+     * @param {string} ambulanceId The ID of the ambulance to delete.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulancesApi
+     */
+    public deleteAmbulance(ambulanceId: string, options?: AxiosRequestConfig) {
+        return AmbulancesApiFp(this.configuration).deleteAmbulance(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to retrieve a list of all ambulances in the system.
+     * @summary Retrieves all ambulances
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AmbulancesApi
+     */
+    public getAllAmbulances(options?: AxiosRequestConfig) {
+        return AmbulancesApiFp(this.configuration).getAllAmbulances(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * MedicineOrdersApi - axios parameter creator
+ * @export
+ */
+export const MedicineOrdersApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Use this endpoint to create a new medicine order associated with an ambulance.
+         * @summary Creates a new medicine order
+         * @param {string} ambulanceId The ID of the ambulance where the medicine order was issued.
+         * @param {MedicineOrder} medicineOrder The medicine order data to create.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createMedicineOrder: async (ambulanceId: string, medicineOrder: MedicineOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('createMedicineOrder', 'ambulanceId', ambulanceId)
+            // verify required parameter 'medicineOrder' is not null or undefined
+            assertParamExists('createMedicineOrder', 'medicineOrder', medicineOrder)
+            const localVarPath = `/ambulances/{ambulanceId}/medicineOrders`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(medicineOrder, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to delete a specific medicine order by its ID.
+         * @summary Deletes a specific medicine order
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order to delete.
+         * @param {string} orderId The ID of the medicine order to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMedicineOrder: async (ambulanceId: string, orderId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('deleteMedicineOrder', 'ambulanceId', ambulanceId)
+            // verify required parameter 'orderId' is not null or undefined
+            assertParamExists('deleteMedicineOrder', 'orderId', orderId)
+            const localVarPath = `/ambulances/{ambulanceId}/medicineOrders/{orderId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"orderId"}}`, encodeURIComponent(String(orderId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to retrieve a list of all medicine orders associated with an ambulance.
+         * @summary Retrieves all medicine orders for an ambulance
+         * @param {string} ambulanceId The ID of the ambulance to retrieve medicine orders for.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllMedicineOrders: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('getAllMedicineOrders', 'ambulanceId', ambulanceId)
+            const localVarPath = `/ambulances/{ambulanceId}/medicineOrders`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to retrieve details of a specific medicine order by its ID and ambulanceId.
+         * @summary Retrieves a specific medicine order by ID
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+         * @param {string} orderId The ID of the medicine order to retrieve.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMedicineOrderById: async (ambulanceId: string, orderId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('getMedicineOrderById', 'ambulanceId', ambulanceId)
+            // verify required parameter 'orderId' is not null or undefined
+            assertParamExists('getMedicineOrderById', 'orderId', orderId)
+            const localVarPath = `/ambulances/{ambulanceId}/medicineOrders/{orderId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"orderId"}}`, encodeURIComponent(String(orderId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use this endpoint to update details of a specific medicine order.
+         * @summary Updates a specific medicine order
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+         * @param {string} orderId The ID of the medicine order to update.
+         * @param {MedicineOrder} medicineOrder The updated medicine order details.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateMedicineOrder: async (ambulanceId: string, orderId: string, medicineOrder: MedicineOrder, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'ambulanceId' is not null or undefined
+            assertParamExists('updateMedicineOrder', 'ambulanceId', ambulanceId)
+            // verify required parameter 'orderId' is not null or undefined
+            assertParamExists('updateMedicineOrder', 'orderId', orderId)
+            // verify required parameter 'medicineOrder' is not null or undefined
+            assertParamExists('updateMedicineOrder', 'medicineOrder', medicineOrder)
+            const localVarPath = `/ambulances/{ambulanceId}/medicineOrders/{orderId}`
+                .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
+                .replace(`{${"orderId"}}`, encodeURIComponent(String(orderId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(medicineOrder, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * MedicineOrdersApi - functional programming interface
+ * @export
+ */
+export const MedicineOrdersApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = MedicineOrdersApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Use this endpoint to create a new medicine order associated with an ambulance.
+         * @summary Creates a new medicine order
+         * @param {string} ambulanceId The ID of the ambulance where the medicine order was issued.
+         * @param {MedicineOrder} medicineOrder The medicine order data to create.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createMedicineOrder(ambulanceId: string, medicineOrder: MedicineOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MedicineOrder>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createMedicineOrder(ambulanceId, medicineOrder, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to delete a specific medicine order by its ID.
+         * @summary Deletes a specific medicine order
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order to delete.
+         * @param {string} orderId The ID of the medicine order to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteMedicineOrder(ambulanceId: string, orderId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteMedicineOrder(ambulanceId, orderId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to retrieve a list of all medicine orders associated with an ambulance.
+         * @summary Retrieves all medicine orders for an ambulance
+         * @param {string} ambulanceId The ID of the ambulance to retrieve medicine orders for.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getAllMedicineOrders(ambulanceId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MedicineOrder>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getAllMedicineOrders(ambulanceId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to retrieve details of a specific medicine order by its ID and ambulanceId.
+         * @summary Retrieves a specific medicine order by ID
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+         * @param {string} orderId The ID of the medicine order to retrieve.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMedicineOrderById(ambulanceId: string, orderId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MedicineOrder>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMedicineOrderById(ambulanceId, orderId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Use this endpoint to update details of a specific medicine order.
+         * @summary Updates a specific medicine order
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+         * @param {string} orderId The ID of the medicine order to update.
+         * @param {MedicineOrder} medicineOrder The updated medicine order details.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateMedicineOrder(ambulanceId: string, orderId: string, medicineOrder: MedicineOrder, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateMedicineOrder(ambulanceId, orderId, medicineOrder, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * MedicineOrdersApi - factory interface
+ * @export
+ */
+export const MedicineOrdersApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = MedicineOrdersApiFp(configuration)
+    return {
+        /**
+         * Use this endpoint to create a new medicine order associated with an ambulance.
+         * @summary Creates a new medicine order
+         * @param {string} ambulanceId The ID of the ambulance where the medicine order was issued.
+         * @param {MedicineOrder} medicineOrder The medicine order data to create.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createMedicineOrder(ambulanceId: string, medicineOrder: MedicineOrder, options?: any): AxiosPromise<MedicineOrder> {
+            return localVarFp.createMedicineOrder(ambulanceId, medicineOrder, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to delete a specific medicine order by its ID.
+         * @summary Deletes a specific medicine order
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order to delete.
+         * @param {string} orderId The ID of the medicine order to delete.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteMedicineOrder(ambulanceId: string, orderId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteMedicineOrder(ambulanceId, orderId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to retrieve a list of all medicine orders associated with an ambulance.
+         * @summary Retrieves all medicine orders for an ambulance
+         * @param {string} ambulanceId The ID of the ambulance to retrieve medicine orders for.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getAllMedicineOrders(ambulanceId: string, options?: any): AxiosPromise<Array<MedicineOrder>> {
+            return localVarFp.getAllMedicineOrders(ambulanceId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to retrieve details of a specific medicine order by its ID and ambulanceId.
+         * @summary Retrieves a specific medicine order by ID
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+         * @param {string} orderId The ID of the medicine order to retrieve.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMedicineOrderById(ambulanceId: string, orderId: string, options?: any): AxiosPromise<MedicineOrder> {
+            return localVarFp.getMedicineOrderById(ambulanceId, orderId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use this endpoint to update details of a specific medicine order.
+         * @summary Updates a specific medicine order
+         * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+         * @param {string} orderId The ID of the medicine order to update.
+         * @param {MedicineOrder} medicineOrder The updated medicine order details.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateMedicineOrder(ambulanceId: string, orderId: string, medicineOrder: MedicineOrder, options?: any): AxiosPromise<void> {
+            return localVarFp.updateMedicineOrder(ambulanceId, orderId, medicineOrder, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * MedicineOrdersApi - interface
+ * @export
+ * @interface MedicineOrdersApi
+ */
+export interface MedicineOrdersApiInterface {
+    /**
+     * Use this endpoint to create a new medicine order associated with an ambulance.
+     * @summary Creates a new medicine order
+     * @param {string} ambulanceId The ID of the ambulance where the medicine order was issued.
+     * @param {MedicineOrder} medicineOrder The medicine order data to create.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApiInterface
+     */
+    createMedicineOrder(ambulanceId: string, medicineOrder: MedicineOrder, options?: AxiosRequestConfig): AxiosPromise<MedicineOrder>;
+
+    /**
+     * Use this endpoint to delete a specific medicine order by its ID.
+     * @summary Deletes a specific medicine order
+     * @param {string} ambulanceId The ID of the ambulance associated with the medicine order to delete.
+     * @param {string} orderId The ID of the medicine order to delete.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApiInterface
+     */
+    deleteMedicineOrder(ambulanceId: string, orderId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Use this endpoint to retrieve a list of all medicine orders associated with an ambulance.
+     * @summary Retrieves all medicine orders for an ambulance
+     * @param {string} ambulanceId The ID of the ambulance to retrieve medicine orders for.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApiInterface
+     */
+    getAllMedicineOrders(ambulanceId: string, options?: AxiosRequestConfig): AxiosPromise<Array<MedicineOrder>>;
+
+    /**
+     * Use this endpoint to retrieve details of a specific medicine order by its ID and ambulanceId.
+     * @summary Retrieves a specific medicine order by ID
+     * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+     * @param {string} orderId The ID of the medicine order to retrieve.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApiInterface
+     */
+    getMedicineOrderById(ambulanceId: string, orderId: string, options?: AxiosRequestConfig): AxiosPromise<MedicineOrder>;
+
+    /**
+     * Use this endpoint to update details of a specific medicine order.
+     * @summary Updates a specific medicine order
+     * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+     * @param {string} orderId The ID of the medicine order to update.
+     * @param {MedicineOrder} medicineOrder The updated medicine order details.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApiInterface
+     */
+    updateMedicineOrder(ambulanceId: string, orderId: string, medicineOrder: MedicineOrder, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+}
+
+/**
+ * MedicineOrdersApi - object-oriented interface
+ * @export
+ * @class MedicineOrdersApi
+ * @extends {BaseAPI}
+ */
+export class MedicineOrdersApi extends BaseAPI implements MedicineOrdersApiInterface {
+    /**
+     * Use this endpoint to create a new medicine order associated with an ambulance.
+     * @summary Creates a new medicine order
+     * @param {string} ambulanceId The ID of the ambulance where the medicine order was issued.
+     * @param {MedicineOrder} medicineOrder The medicine order data to create.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApi
+     */
+    public createMedicineOrder(ambulanceId: string, medicineOrder: MedicineOrder, options?: AxiosRequestConfig) {
+        return MedicineOrdersApiFp(this.configuration).createMedicineOrder(ambulanceId, medicineOrder, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to delete a specific medicine order by its ID.
+     * @summary Deletes a specific medicine order
+     * @param {string} ambulanceId The ID of the ambulance associated with the medicine order to delete.
+     * @param {string} orderId The ID of the medicine order to delete.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApi
+     */
+    public deleteMedicineOrder(ambulanceId: string, orderId: string, options?: AxiosRequestConfig) {
+        return MedicineOrdersApiFp(this.configuration).deleteMedicineOrder(ambulanceId, orderId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to retrieve a list of all medicine orders associated with an ambulance.
+     * @summary Retrieves all medicine orders for an ambulance
+     * @param {string} ambulanceId The ID of the ambulance to retrieve medicine orders for.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApi
+     */
+    public getAllMedicineOrders(ambulanceId: string, options?: AxiosRequestConfig) {
+        return MedicineOrdersApiFp(this.configuration).getAllMedicineOrders(ambulanceId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to retrieve details of a specific medicine order by its ID and ambulanceId.
+     * @summary Retrieves a specific medicine order by ID
+     * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+     * @param {string} orderId The ID of the medicine order to retrieve.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApi
+     */
+    public getMedicineOrderById(ambulanceId: string, orderId: string, options?: AxiosRequestConfig) {
+        return MedicineOrdersApiFp(this.configuration).getMedicineOrderById(ambulanceId, orderId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use this endpoint to update details of a specific medicine order.
+     * @summary Updates a specific medicine order
+     * @param {string} ambulanceId The ID of the ambulance associated with the medicine order.
+     * @param {string} orderId The ID of the medicine order to update.
+     * @param {MedicineOrder} medicineOrder The updated medicine order details.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MedicineOrdersApi
+     */
+    public updateMedicineOrder(ambulanceId: string, orderId: string, medicineOrder: MedicineOrder, options?: AxiosRequestConfig) {
+        return MedicineOrdersApiFp(this.configuration).updateMedicineOrder(ambulanceId, orderId, medicineOrder, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
 
 /**
  * PrescriptionsApi - axios parameter creator
@@ -165,7 +952,7 @@ export const PrescriptionsApiAxiosParamCreator = function (configuration?: Confi
             assertParamExists('createPrescription', 'ambulanceId', ambulanceId)
             // verify required parameter 'prescription' is not null or undefined
             assertParamExists('createPrescription', 'prescription', prescription)
-            const localVarPath = `/prescriptions/{ambulanceId}`
+            const localVarPath = `/ambulances/{ambulanceId}/prescriptions`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -205,7 +992,7 @@ export const PrescriptionsApiAxiosParamCreator = function (configuration?: Confi
             assertParamExists('deletePrescription', 'ambulanceId', ambulanceId)
             // verify required parameter 'prescriptionId' is not null or undefined
             assertParamExists('deletePrescription', 'prescriptionId', prescriptionId)
-            const localVarPath = `/prescriptions/{ambulanceId}/{prescriptionId}`
+            const localVarPath = `/ambulances/{ambulanceId}/prescriptions/{prescriptionId}`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
                 .replace(`{${"prescriptionId"}}`, encodeURIComponent(String(prescriptionId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -240,7 +1027,7 @@ export const PrescriptionsApiAxiosParamCreator = function (configuration?: Confi
         getAmbulancePrescriptions: async (ambulanceId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'ambulanceId' is not null or undefined
             assertParamExists('getAmbulancePrescriptions', 'ambulanceId', ambulanceId)
-            const localVarPath = `/prescriptions/{ambulanceId}`
+            const localVarPath = `/ambulances/{ambulanceId}/prescriptions`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -277,7 +1064,7 @@ export const PrescriptionsApiAxiosParamCreator = function (configuration?: Confi
             assertParamExists('getPrescriptionById', 'ambulanceId', ambulanceId)
             // verify required parameter 'prescriptionId' is not null or undefined
             assertParamExists('getPrescriptionById', 'prescriptionId', prescriptionId)
-            const localVarPath = `/prescriptions/{ambulanceId}/{prescriptionId}`
+            const localVarPath = `/ambulances/{ambulanceId}/prescriptions/{prescriptionId}`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
                 .replace(`{${"prescriptionId"}}`, encodeURIComponent(String(prescriptionId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -318,7 +1105,7 @@ export const PrescriptionsApiAxiosParamCreator = function (configuration?: Confi
             assertParamExists('updatePrescription', 'prescriptionId', prescriptionId)
             // verify required parameter 'prescription' is not null or undefined
             assertParamExists('updatePrescription', 'prescription', prescription)
-            const localVarPath = `/prescriptions/{ambulanceId}/{prescriptionId}`
+            const localVarPath = `/ambulances/{ambulanceId}/prescriptions/{prescriptionId}`
                 .replace(`{${"ambulanceId"}}`, encodeURIComponent(String(ambulanceId)))
                 .replace(`{${"prescriptionId"}}`, encodeURIComponent(String(prescriptionId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
