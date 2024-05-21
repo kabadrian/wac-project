@@ -1,5 +1,5 @@
 import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
-import { PrescriptionsApiFactory } from '../../api/pharmacy-pl';
+import { MedicineOrdersApiFactory } from '../../api/pharmacy-pl';
 
 @Component({
   tag: 'employee-prescription-list',
@@ -13,8 +13,8 @@ export class EmployeePrescriptionList {
 
   @State() orders: {
     orderId: string;
+    orderedBy: string;
     orderDate: string;
-    orderBy: string;
     notes: string;
     medicines: { name: string }[];
   }[] = [];
@@ -25,14 +25,14 @@ export class EmployeePrescriptionList {
 
   private async getOrdersAsync() {
     try {
-      const response = await PrescriptionsApiFactory(undefined, this.apiBase)
-        .getAmbulancePrescriptions(this.ambulanceId); // Assuming the endpoint remains the same for now
+      const response = await MedicineOrdersApiFactory(undefined, this.apiBase)
+        .getAllMedicineOrders(this.ambulanceId); // Assuming the endpoint remains the same for now
 
       if (response.status < 299) {
         this.orders = response.data.map(order => ({
-          orderId: order.id,
-          orderDate: order.issuedDate,
-          orderBy: order.doctorName,
+          orderId: order.orderId,
+          orderDate: order.orderDate,
+          orderedBy: order.orderedBy,
           notes: order.notes,
           medicines: order.medicines.map(medicine => ({ name: medicine.name }))
         }));
@@ -59,12 +59,13 @@ export class EmployeePrescriptionList {
         {this.errorMessage
           ? <div class="error">{this.errorMessage}</div>
           :
+          <div>
           <md-list>
             {this.orders.map(order =>
               <md-list-item class="order-item" onClick={() => this.entryClicked.emit(order.orderId)}>
                 <div slot="headline">{order.orderId}</div>
                 <div slot="supporting-text">{"Order Date: " + this.isoDateToLocale(order.orderDate)}</div>
-                <div slot="supporting-text">{"Ordered By: " + order.orderBy}</div>
+                <div slot="supporting-text">{"Ordered By: " + order.orderedBy}</div>
                 <div slot="supporting-text">{"Notes: " + order.notes}</div>
                 <div slot="supporting-text">
                   <p>Medicines:</p>
@@ -78,6 +79,12 @@ export class EmployeePrescriptionList {
               </md-list-item>
             )}
           </md-list>
+          <div class="left-button-container">
+          <md-filled-button onClick={ () => this.entryClicked.emit("@new")}>
+            Add
+          </md-filled-button>
+        </div>
+        </div>
         }
       </Host>
     );

@@ -472,7 +472,7 @@ components:
       example:
         orderId: ORD123456789
         orderDate: "2024-05-18T12:00:00Z"
-        odrerBy: "Dr. House"
+        orderedBy: "Dr. House"
         notes: "Delivery in 3 days"
         state: "pending"
         medicines:
@@ -512,7 +512,7 @@ components:
         medicineOrderList:
           - orderId: ORD123456789
             orderDate: "2024-05-18T12:00:00Z"
-            odrerBy: "Dr. House"
+            orderedBy: "Dr. House"
             notes: "Delivery in 3 days"
             state: "pending"
             medicines:

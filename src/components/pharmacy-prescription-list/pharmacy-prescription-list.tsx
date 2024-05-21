@@ -60,12 +60,11 @@ export class PharmacyPrescriptionList {
             )}
           </md-list>
           <div class="left-button-container">
-            <md-filled-button onClick={ () => this.entryClicked.emit("@new")}>
-              Home
+            <md-filled-button onClick={() => this.entryClicked.emit("@new")}>
+              <md-icon slot="icon">add</md-icon> Add
             </md-filled-button>
           </div>
           </div>
-          
         }
       </Host>
     );

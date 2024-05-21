@@ -1,5 +1,5 @@
 import { Component, Host, Prop, State, h, EventEmitter, Event } from '@stencil/core';
-import { Prescription, PrescriptionsApiFactory } from '../../api/pharmacy-pl';
+import { Medicine, MedicineOrder,MedicineOrdersApiFactory } from '../../api/pharmacy-pl';
 
 @Component({
   tag: 'employee-prescription-editor',
@@ -14,40 +14,42 @@ export class EmployeePrescriptionEditor {
 
   @Event({ eventName: "editor-closed" }) editorClosed: EventEmitter<string>;
 
-  @State() entry: Prescription;
+  @State() entry: MedicineOrder;
   @State() errorMessage: string;
   @State() isValid: boolean;
   @State() showModal: boolean = false;
-  @State() medicinesList: string[] = [];
-  @State() selectedMedicine: string = '';
+  @State() medicinesList: Medicine[] = [];
+  @State() selectedMedicine: Medicine | string = '';
 
   private formElement: HTMLFormElement;
 
   private availableMedicines: string[] = ["Aspirin", "Ibuprofen", "Amoxicillin", "Metformin", "Lisinopril"];
 
-  private async getPrescriptionEntryAsync(): Promise<Prescription> {
+  private async getMedicineOrderEntryAsync(): Promise<MedicineOrder> {
     if (!this.entryId) {
       this.isValid = false;
       return undefined;
     }
     try {
-      const response = await PrescriptionsApiFactory(undefined, this.apiBase)
-        .getPrescriptionById(this.ambulanceId, this.entryId);
+      const response = await MedicineOrdersApiFactory(undefined, this.apiBase)
+        .getMedicineOrderById(this.ambulanceId, this.entryId);
 
       if (response.status < 299) {
         this.entry = response.data;
         this.isValid = true;
+        this.medicinesList = response.data.medicines
+        console.log(this.medicinesList)
       } else {
-        this.errorMessage = `Cannot retrieve list of prescriptions: ${response.statusText}`;
+        this.errorMessage = `Cannot retrieve list of medicine orders: ${response.statusText}`;
       }
     } catch (err: any) {
-      this.errorMessage = `Cannot retrieve list of prescriptions: ${err.message || "unknown"}`;
+      this.errorMessage = `Cannot retrieve list of  medicine orders: ${err.message || "unknown"}`;
     }
     return undefined;
   }
 
   async componentWillLoad() {
-    this.getPrescriptionEntryAsync();
+    this.getMedicineOrderEntryAsync();
   }
 
   handleInputEvent(ev: InputEvent): string {
@@ -57,24 +59,29 @@ export class EmployeePrescriptionEditor {
   }
 
   addMedicineToList() {
-    if (this.selectedMedicine) {
-      this.medicinesList = [
-        ...this.medicinesList,
-        this.selectedMedicine
-      ];
-      this.showModal = false;
-      this.selectedMedicine = '';
-    }
-  }
+  if (typeof this.selectedMedicine === 'string') {
+    console.log(this.selectedMedicine)
+    const medicine: Medicine = {
+      name: this.selectedMedicine,
+    };
 
+    this.medicinesList = [
+      ...this.medicinesList,
+      medicine
+    ];
+
+    this.showModal = false;
+    this.selectedMedicine = '';
+  }
+}
   removeMedicine(index: number) {
     this.medicinesList = this.medicinesList.filter((_, i) => i !== index);
   }
 
   async updateEntry() {
     try {
-      const response = await PrescriptionsApiFactory(undefined, this.apiBase)
-        .updatePrescription(this.ambulanceId, this.entryId, this.entry);
+      const response = await MedicineOrdersApiFactory(undefined, this.apiBase)
+        .updateMedicineOrder(this.ambulanceId, this.entryId, this.entry);
       if (response.status < 299) {
         this.editorClosed.emit("store");
       } else {
@@ -87,8 +94,8 @@ export class EmployeePrescriptionEditor {
 
   async deleteEntry() {
     try {
-      const response = await PrescriptionsApiFactory(undefined, this.apiBase)
-        .deletePrescription(this.ambulanceId, this.entryId);
+      const response = await MedicineOrdersApiFactory(undefined, this.apiBase)
+        .deleteMedicineOrder(this.ambulanceId, this.entryId);
       if (response.status < 299) {
         this.editorClosed.emit("delete");
       } else {
@@ -110,64 +117,59 @@ export class EmployeePrescriptionEditor {
     return (
       <Host>
         <form ref={el => this.formElement = el}>
-          <md-filled-text-field label="Meno a Priezvisko"
-            required value={this.entry?.patientName}
+          <md-filled-text-field label="Name and Last Name"
+            required value={this.entry?.orderId}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.patientName = this.handleInputEvent(ev) }
+              if (this.entry) { this.entry.orderId = this.handleInputEvent(ev) }
             }}>
             <md-icon slot="leading-icon">person</md-icon>
           </md-filled-text-field>
 
-          <md-filled-text-field label="Meno doktora"
-            required value={this.entry?.doctorName}
+          <md-filled-text-field label="Ordered from"
+            required value={this.entry?.orderedBy}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.doctorName = this.handleInputEvent(ev) }
+              if (this.entry) { this.entry.orderedBy = this.handleInputEvent(ev) }
             }}>
             <md-icon slot="leading-icon">fingerprint</md-icon>
           </md-filled-text-field>
 
-          <md-filled-text-field label="Datum predpisu" disabled
-            value={this.entry?.issuedDate}>
+          <md-filled-text-field label="Order date" disabled
+            value={this.entry?.orderDate}>
             <md-icon slot="leading-icon">watch_later</md-icon>
           </md-filled-text-field>
-
-          <md-filled-text-field label="Datum platnosti" disabled
-            value={this.entry?.validUntil}>
-            <md-icon slot="leading-icon">watch_later</md-icon>
-          </md-filled-text-field>
-
-          <md-filled-text-field label="Instructions">
-            <textarea slot="input" value={this.entry?.instructions} onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.instructions = this.handleInputEvent(ev) }
-            }}></textarea>
-            <md-icon slot="leading-icon">description</md-icon>
-          </md-filled-text-field>
-
-          <md-filled-text-field label="Notes">
-            <textarea slot="input" value={this.entry?.notes} onInput={(ev: InputEvent) => {
+         
+          <md-filled-text-field label="Notes"
+            value={this.entry?.notes}
+            onInput={(ev: InputEvent) => {
               if (this.entry) { this.entry.notes = this.handleInputEvent(ev) }
-            }}></textarea>
-            <md-icon slot="leading-icon">notes</md-icon>
+            }}>
+            <md-icon slot="leading-icon">fingerprint</md-icon>
           </md-filled-text-field>
 
           <md-divider></md-divider>
 
-          <div class="medicine-list">
-            {this.medicinesList.map((medicine, index) => (
-              <div class="medicine-entry">
-                <span class="medicine-name">{medicine}</span>
-                <md-icon-button aria-label="Remove" onClick={() => this.removeMedicine(index)}>
-                  <md-icon>delete</md-icon>
-                </md-icon-button>
-              </div>
-            ))}
+          <div class="medicine-list-container">
+            <div class="medicine-list">
+              {this.medicinesList.map((medicine, index) => (
+                <div class="medicine-entry" key={index}>
+                  <div class="oval-container">
+                    <span class="item-number">{index + 1}</span>
+                    <span class="medicine-name">{medicine.name}</span>
+                    <md-icon-button class="delete-button" aria-label="Remove" onClick={() => this.removeMedicine(index)}>
+                    <md-icon>delete</md-icon>
+                  </md-icon-button>
+                  </div>
+                
+                </div>
+              ))}
+            </div>
+            <md-filled-tonal-button class="add-medicine-button" onClick={() => this.showModal = true}>
+              Add Medicine
+            </md-filled-tonal-button>
           </div>
 
-          <md-filled-tonal-button onClick={() => this.showModal = true}>
-            Add Medicine
-          </md-filled-tonal-button>
-
           {this.showModal && (
+          <div class="modal-overlay">
             <div class="modal">
               <div class="modal-content">
                 <h2>Add Medicine</h2>
@@ -188,23 +190,24 @@ export class EmployeePrescriptionEditor {
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
           <div class="actions">
             <md-filled-tonal-button id="delete" disabled={!this.entry}
               onClick={() => this.deleteEntry()}>
               <md-icon slot="icon">delete</md-icon>
-              Zmazať
+              Delete
             </md-filled-tonal-button>
             <span class="stretch-fill"></span>
             <md-outlined-button id="cancel"
               onClick={() => this.editorClosed.emit("cancel")}>
-              Zrušiť
+              Cancel
             </md-outlined-button>
             <md-filled-button id="confirm" disabled={!this.isValid}
               onClick={() => this.updateEntry()}>
               <md-icon slot="icon">save</md-icon>
-              Uložiť
+              Save
             </md-filled-button>
           </div>
         </form>
