@@ -79,7 +79,7 @@ export class EmployeePrescriptionList {
               </md-list-item>
             )}
           </md-list>
-          <div class="left-button-container">
+          <div class="right-button-container">
             <md-filled-button onClick={() => this.entryClicked.emit("@new")}>
               <md-icon slot="icon">add</md-icon> Add
             </md-filled-button>
