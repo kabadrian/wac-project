@@ -26,6 +26,24 @@ export class PharmacyPrescriptionEditor {
   private availableMedicines: string[] = ["Aspirin", "Ibuprofen", "Amoxicillin", "Metformin", "Lisinopril"];
 
   private async getPrescriptionEntryAsync(): Promise<Prescription> {
+    console.log(this.entryId);
+    if(this.entryId === "@new") {
+      this.isValid = false;
+      this.entry = {
+        id: "@new",
+        patientId: "",
+        medicines: [],
+        patientName: "",
+        doctorName: "",
+        issuedDate: new Date().toISOString(),
+        validUntil: new Date().toISOString(),
+        instructions: "",
+        notes: "",
+        status: ""
+      };
+      return this.entry;
+    }
+
     if (!this.entryId) {
       this.isValid = false;
       return undefined;
@@ -68,6 +86,8 @@ export class PharmacyPrescriptionEditor {
         ...this.medicinesList,
         medicine
       ];
+
+      this.entry.medicines = this.medicinesList;
   
       this.showModal = false;
       this.selectedMedicine = '';
