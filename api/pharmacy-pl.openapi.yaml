@@ -3,9 +3,9 @@ servers:
   - description: Cluster Endpoint
     url: /api
 info:
-  description: Pharmacy Prescription management system
+  description: Ambulance Prescription management system
   version: "1.0.0"
-  title: Pharmacy Prescription API
+  title: Ambulance Prescription API
   contact:
     email: xkabac@stuba.sk
   license:
@@ -13,7 +13,7 @@ info:
     url: "https://creativecommons.org/licenses/by/4.0/"
 tags:
   - name: prescriptions
-    description: Pharmacy Prescription API
+    description: Ambulance Prescription API
   - name: ambulances
     description: Ambulance details
   - name: medicineOrders
@@ -477,7 +477,6 @@ components:
         state: "pending"
         medicines:
           - name: Amoxicillin
-
   examples:
     AmbulanceExample:
       summary: Sample GP ambulance
