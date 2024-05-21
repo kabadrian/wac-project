@@ -13,7 +13,7 @@ md-list-item.unhealthy {
   --md-filled-icon-button-container-size: 4rem;
   --md-filled-icon-button-icon-size: 3rem;
 }
-
-.left-button-container md-filled-button {
-  border-radius: 20px;
+.right-button-container {
+  display: flex;
+  justify-content: flex-end;
 }

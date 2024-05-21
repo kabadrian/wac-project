@@ -38,7 +38,6 @@ export class EmployeePrescriptionEditor {
         this.entry = response.data;
         this.isValid = true;
         this.medicinesList = response.data.medicines
-        console.log(this.medicinesList)
       } else {
         this.errorMessage = `Cannot retrieve list of medicine orders: ${response.statusText}`;
       }

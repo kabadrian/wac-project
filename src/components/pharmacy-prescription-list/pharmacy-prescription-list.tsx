@@ -43,10 +43,10 @@ export class PharmacyPrescriptionList {
             {this.medicinePrescriptions.map(prescription =>
               <md-list-item class="prescription-item" onClick={ () => this.entryClicked.emit(prescription.id)}>
                 <div slot="headline">{prescription.patientName}</div>
-                <div slot="supporting-text">{"Čas predpísania receptu: " + this.isoDateToLocale(prescription.issuedDate)}</div>
-                <div slot="supporting-text">{"Recept platný do: " + this.isoDateToLocale(prescription.validUntil)}</div>
+                <div slot="supporting-text">{"Date of prescription: " + this.isoDateToLocale(prescription.issuedDate)}</div>
+                <div slot="supporting-text">{"Expire date: " + this.isoDateToLocale(prescription.validUntil)}</div>
                 <div slot="supporting-text">
-                  <p>Predpísané lieky:</p>
+                  <p>Medicines:</p>
                   <ul>
                     {prescription.medicines.map((medicine: Medicine) => (
                       <li>
@@ -59,7 +59,7 @@ export class PharmacyPrescriptionList {
               </md-list-item>
             )}
           </md-list>
-          <div class="left-button-container">
+          <div class="right-button-container">
             <md-filled-button onClick={() => this.entryClicked.emit("@new")}>
               <md-icon slot="icon">add</md-icon> Add
             </md-filled-button>
