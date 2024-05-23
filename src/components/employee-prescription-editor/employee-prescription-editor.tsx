@@ -82,12 +82,16 @@ export class EmployeePrescriptionEditor {
       medicine
     ];
 
+    this.entry.medicines = this.medicinesList;
+
     this.showModal = false;
     this.selectedMedicine = '';
   }
 }
   removeMedicine(index: number) {
     this.medicinesList = this.medicinesList.filter((_, i) => i !== index);
+
+    this.entry.medicines = this.medicinesList;
   }
 
   async updateEntry() {

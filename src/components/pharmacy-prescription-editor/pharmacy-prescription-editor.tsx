@@ -96,6 +96,8 @@ export class PharmacyPrescriptionEditor {
 
   removeMedicine(index: number) {
     this.medicinesList = this.medicinesList.filter((_, i) => i !== index);
+
+    this.entry.medicines = this.medicinesList;
   }
 
   async updateEntry() {
