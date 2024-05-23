@@ -17,3 +17,7 @@ md-list-item.unhealthy {
   display: flex;
   justify-content: flex-end;
 }
+
+.headline {
+  margin-left: 2rem;
+}

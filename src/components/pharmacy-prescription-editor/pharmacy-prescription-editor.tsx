@@ -21,16 +21,13 @@ export class PharmacyPrescriptionEditor {
   @State() medicinesList: Medicine[] = [];
   @State() selectedMedicine: Medicine | string = '';
 
-  private formElement: HTMLFormElement;
-
   private availableMedicines: string[] = ["Aspirin", "Ibuprofen", "Amoxicillin", "Metformin", "Lisinopril"];
 
   private async getPrescriptionEntryAsync(): Promise<Prescription> {
-    console.log(this.entryId);
     if(this.entryId === "@new") {
       this.isValid = false;
       this.entry = {
-        id: "@new",
+        id: Math.random().toString(36).substring(7),
         patientId: "",
         medicines: [],
         patientName: "",
@@ -71,7 +68,8 @@ export class PharmacyPrescriptionEditor {
 
   handleInputEvent(ev: InputEvent): string {
     const target = ev.target as HTMLInputElement;
-    this.isValid = this.formElement.checkValidity();
+    this.isValid = target.reportValidity();
+
     return target.value;
   }
 
@@ -100,20 +98,22 @@ export class PharmacyPrescriptionEditor {
     this.entry.medicines = this.medicinesList;
   }
 
-  async updateEntry() {
+  private async updateEntry() {
     try {
-      const response = await PrescriptionsApiFactory(undefined, this.apiBase)
-        .updatePrescription(this.ambulanceId, this.entryId, this.entry);
+      const api = PrescriptionsApiFactory(undefined, this.apiBase);
+      const response =
+        this.entryId === '@new'
+          ? await api.createPrescription(this.ambulanceId, this.entry)
+          : await api.updatePrescription(this.ambulanceId, this.entryId, this.entry);
       if (response.status < 299) {
-        this.editorClosed.emit("store");
+        this.editorClosed.emit('store');
       } else {
         this.errorMessage = `Cannot store entry: ${response.statusText}`;
       }
     } catch (err: any) {
-      this.errorMessage = `Cannot store entry: ${err.message || "unknown"}`;
+      this.errorMessage = `Cannot store entry: ${err.message || 'unknown'}`;
     }
   }
-
   async deleteEntry() {
     try {
       const response = await PrescriptionsApiFactory(undefined, this.apiBase)
@@ -138,11 +138,14 @@ export class PharmacyPrescriptionEditor {
     }
     return (
       <Host>
-        <form ref={el => this.formElement = el}>
+        <form>
           <md-filled-text-field label="Name and Last Name"
             required value={this.entry?.patientName}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.patientName = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.patientName = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity()
+              }
             }}>
             <md-icon slot="leading-icon">person</md-icon>
           </md-filled-text-field>
@@ -150,9 +153,23 @@ export class PharmacyPrescriptionEditor {
           <md-filled-text-field label="Name of doctor"
             required value={this.entry?.doctorName}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.doctorName = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.doctorName = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity()
+              }
             }}>
             <md-icon slot="leading-icon">fingerprint</md-icon>
+          </md-filled-text-field>
+
+          <md-filled-text-field label="Patient ID"
+            required value={this.entry?.patientId}
+            onInput={(ev: InputEvent) => {
+              if (this.entry) { 
+                this.entry.patientId = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity()
+              }
+            }}>
+            <md-icon slot="leading-icon">person</md-icon>
           </md-filled-text-field>
 
           <md-filled-text-field label="Date of prescription" disabled
@@ -168,7 +185,10 @@ export class PharmacyPrescriptionEditor {
           <md-filled-text-field label="Instructions"
             value={this.entry?.instructions}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.instructions = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.instructions = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity()
+              }
             }}>
             <md-icon slot="leading-icon">description</md-icon>
           </md-filled-text-field>
@@ -176,7 +196,10 @@ export class PharmacyPrescriptionEditor {
           <md-filled-text-field label="Notes"
             value={this.entry?.notes}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.notes = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.notes = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity()
+              }
             }}>
             <md-icon slot="leading-icon">fingerprint</md-icon>
           </md-filled-text-field>
@@ -190,11 +213,13 @@ export class PharmacyPrescriptionEditor {
                   <div class="oval-container">
                     <span class="item-number">{index + 1}</span>
                     <span class="medicine-name">{medicine.name}</span>
-                    <md-icon-button class="delete-button" aria-label="Remove" onClick={() => this.removeMedicine(index)}>
+                    <md-icon-button class="delete-button" aria-label="Remove" onClick={() => {
+                      this.removeMedicine(index) 
+                      this.isValid = this.checkValidity()
+                      }}>
                     <md-icon>delete</md-icon>
                   </md-icon-button>
                   </div>
-                  
                 </div>
               ))}
             </div>
@@ -224,7 +249,10 @@ export class PharmacyPrescriptionEditor {
                   </md-filled-select>
                   <div class="modal-actions" style={{ padding: '10px' }}>
                     {/* Add padding for buttons */}
-                    <md-filled-button onClick={() => this.addMedicineToList()}>
+                    <md-filled-button onClick={() => {
+                      this.addMedicineToList()
+                      this.isValid = this.checkValidity()
+                      }}>
                       Add
                     </md-filled-button>
                     <md-outlined-button onClick={() => (this.showModal = false)}>
@@ -237,11 +265,13 @@ export class PharmacyPrescriptionEditor {
           )}
 
           <div class="actions">
+            {this.entryId !== '@new' && (
             <md-filled-tonal-button id="delete" disabled={!this.entry}
               onClick={() => this.deleteEntry()}>
               <md-icon slot="icon">delete</md-icon>
               Delete
             </md-filled-tonal-button>
+            )}
             <span class="stretch-fill"></span>
             <md-outlined-button id="cancel"
               onClick={() => this.editorClosed.emit("cancel")}>
@@ -255,6 +285,16 @@ export class PharmacyPrescriptionEditor {
           </div>
         </form>
       </Host>
+    );
+  }
+
+  private checkValidity(): boolean {
+    return (
+      !!this.entry?.id &&
+      !!this.entry?.patientName && 
+      !!this.entry?.doctorName && 
+      !!this.entry?.patientId && 
+      this.entry?.medicines.length > 0
     );
   }
 }

@@ -21,8 +21,6 @@ export class EmployeePrescriptionEditor {
   @State() medicinesList: Medicine[] = [];
   @State() selectedMedicine: Medicine | string = '';
 
-  private formElement: HTMLFormElement;
-
   private availableMedicines: string[] = ["Aspirin", "Ibuprofen", "Amoxicillin", "Metformin", "Lisinopril"];
 
   private async getMedicineOrderEntryAsync(): Promise<MedicineOrder> {
@@ -31,7 +29,7 @@ export class EmployeePrescriptionEditor {
     if(this.entryId === "@new") {
       this.isValid = false;
       this.entry = {
-        orderId: "@new",
+        orderId: Math.random().toString(36).substring(7),
         medicines: [],
         orderedBy: "",
         orderDate: new Date().toISOString(),
@@ -66,9 +64,11 @@ export class EmployeePrescriptionEditor {
 
   handleInputEvent(ev: InputEvent): string {
     const target = ev.target as HTMLInputElement;
-    this.isValid = this.formElement.checkValidity();
+    this.isValid = target.reportValidity();
+
     return target.value;
   }
+
 
   addMedicineToList() {
   if (typeof this.selectedMedicine === 'string') {
@@ -94,17 +94,20 @@ export class EmployeePrescriptionEditor {
     this.entry.medicines = this.medicinesList;
   }
 
-  async updateEntry() {
+  private async updateEntry() {
     try {
-      const response = await MedicineOrdersApiFactory(undefined, this.apiBase)
-        .updateMedicineOrder(this.ambulanceId, this.entryId, this.entry);
+      const api = MedicineOrdersApiFactory(undefined, this.apiBase);
+      const response =
+        this.entryId === '@new'
+          ? await api.createMedicineOrder(this.ambulanceId, this.entry)
+          : await api.updateMedicineOrder(this.ambulanceId, this.entryId, this.entry);
       if (response.status < 299) {
-        this.editorClosed.emit("store");
+        this.editorClosed.emit('store');
       } else {
         this.errorMessage = `Cannot store entry: ${response.statusText}`;
       }
     } catch (err: any) {
-      this.errorMessage = `Cannot store entry: ${err.message || "unknown"}`;
+      this.errorMessage = `Cannot store entry: ${err.message || 'unknown'}`;
     }
   }
 
@@ -132,11 +135,14 @@ export class EmployeePrescriptionEditor {
     }
     return (
       <Host>
-        <form ref={el => this.formElement = el}>
+        <form>
           <md-filled-text-field label="Name and Last Name"
             required value={this.entry?.orderId}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.orderId = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.orderId = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity();
+              }
             }}>
             <md-icon slot="leading-icon">person</md-icon>
           </md-filled-text-field>
@@ -144,7 +150,10 @@ export class EmployeePrescriptionEditor {
           <md-filled-text-field label="Ordered from"
             required value={this.entry?.orderedBy}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.orderedBy = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.orderedBy = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity();
+              }
             }}>
             <md-icon slot="leading-icon">fingerprint</md-icon>
           </md-filled-text-field>
@@ -157,7 +166,10 @@ export class EmployeePrescriptionEditor {
           <md-filled-text-field label="Notes"
             value={this.entry?.notes}
             onInput={(ev: InputEvent) => {
-              if (this.entry) { this.entry.notes = this.handleInputEvent(ev) }
+              if (this.entry) { 
+                this.entry.notes = this.handleInputEvent(ev) 
+                this.isValid = this.checkValidity();
+              }
             }}>
             <md-icon slot="leading-icon">fingerprint</md-icon>
           </md-filled-text-field>
@@ -171,7 +183,10 @@ export class EmployeePrescriptionEditor {
                   <div class="oval-container">
                     <span class="item-number">{index + 1}</span>
                     <span class="medicine-name">{medicine.name}</span>
-                    <md-icon-button class="delete-button" aria-label="Remove" onClick={() => this.removeMedicine(index)}>
+                    <md-icon-button class="delete-button" aria-label="Remove" onClick={() => {
+                      this.removeMedicine(index)
+                      this.isValid = this.checkValidity();
+                    }}>
                     <md-icon>delete</md-icon>
                   </md-icon-button>
                   </div>
@@ -197,7 +212,10 @@ export class EmployeePrescriptionEditor {
                   ))}
                 </md-filled-select>
                 <div class="modal-actions">
-                  <md-filled-button onClick={() => this.addMedicineToList()}>
+                  <md-filled-button onClick={() => {
+                    this.addMedicineToList()
+                    this.isValid = this.checkValidity();
+                    }}>
                     Add
                   </md-filled-button>
                   <md-outlined-button onClick={() => this.showModal = false}>
@@ -210,11 +228,13 @@ export class EmployeePrescriptionEditor {
         )}
 
           <div class="actions">
+            { this.entryId !== '@new' && (
             <md-filled-tonal-button id="delete" disabled={!this.entry}
               onClick={() => this.deleteEntry()}>
               <md-icon slot="icon">delete</md-icon>
               Delete
             </md-filled-tonal-button>
+            )}
             <span class="stretch-fill"></span>
             <md-outlined-button id="cancel"
               onClick={() => this.editorClosed.emit("cancel")}>
@@ -228,6 +248,15 @@ export class EmployeePrescriptionEditor {
           </div>
         </form>
       </Host>
+    );
+  }
+
+  private checkValidity(): boolean {
+    return (
+      !!this.entry?.orderId &&
+      !!this.entry?.orderedBy && 
+      !!this.entry?.orderDate && 
+      this.entry?.medicines.length > 0
     );
   }
 }

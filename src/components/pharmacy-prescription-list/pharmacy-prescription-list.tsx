@@ -35,6 +35,7 @@ export class PharmacyPrescriptionList {
   render() {
     return (
       <Host>
+        <h1>Prescription List</h1>
         {this.errorMessage
           ? <div class="error">{this.errorMessage}</div>
           :

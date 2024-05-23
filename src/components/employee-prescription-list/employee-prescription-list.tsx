@@ -56,6 +56,8 @@ export class EmployeePrescriptionList {
   render() {
     return (
       <Host>
+
+        <h1 class="headline">Prescription orders list</h1>
         {this.errorMessage
           ? <div class="error">{this.errorMessage}</div>
           :
